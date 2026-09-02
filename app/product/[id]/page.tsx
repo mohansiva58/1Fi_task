@@ -105,14 +105,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     if (!product) return
 
+    const currentProduct = product
     async function fetchRelated() {
       try {
         // Fetch with similarity-based ranking for better recommendations
-        const res = await fetch(`/api/products?relatedTo=${encodeURIComponent(product._id)}&sort=similarity&limit=12`)
+        const res = await fetch(`/api/products?relatedTo=${encodeURIComponent(currentProduct._id)}&sort=similarity&limit=12`)
         let json = await res.json()
         if (json && (json.data || json.products)) {
           const prods = json.data || json.products
-          const filtered = prods.filter((p: any) => String(p._id) !== String(product._id)).slice(0, 8)
+          const filtered = prods.filter((p: any) => String(p._id) !== String(currentProduct._id)).slice(0, 8)
           console.log("Similarity-ranked recommendations fetched:", filtered.length, "items")
           if (filtered.length > 0) {
             setRelatedProducts(filtered)
@@ -122,10 +123,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
         // Fallback: try category-based fetch if similarity returned empty
         try {
-          const resCat = await fetch(`/api/products?category=${encodeURIComponent(product.category)}&limit=8`)
+          const resCat = await fetch(`/api/products?category=${encodeURIComponent(currentProduct.category)}&limit=8`)
           const jcat = await resCat.json()
           if (jcat && (jcat.data || jcat.products)) {
-            const filteredCat = (jcat.data || jcat.products).filter((p: any) => String(p._id) !== String(product._id)).slice(0,8)
+            const filteredCat = (jcat.data || jcat.products).filter((p: any) => String(p._id) !== String(currentProduct._id)).slice(0,8)
             if (filteredCat.length > 0) { console.log("Category fallback fetched:", filteredCat.length); setRelatedProducts(filteredCat); return }
           }
         } catch (err) {
@@ -137,7 +138,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           const res2 = await fetch(`/api/products?limit=8&sort=newest`)
           const j2 = await res2.json()
           if (j2 && (j2.data || j2.products)) {
-            const fallback = (j2.data || j2.products).filter((p: any) => String(p._id) !== String(product._id)).slice(0,8)
+            const fallback = (j2.data || j2.products).filter((p: any) => String(p._id) !== String(currentProduct._id)).slice(0,8)
             console.log("Fallback newest products fetched:", fallback.length)
             setRelatedProducts(fallback)
             return
@@ -178,7 +179,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
       id: productId,
       name: product.name,
       price: product.price,
-      image: product.images[0],
+      image: product.images[0] || "/images/emi-phones.png",
       color: selectedColor,
       size: selectedSize,
       quantity,
@@ -390,7 +391,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                         id: productId,
                         name: product.name,
                         price: product.price,
-                        image: product.images[0],
+                        image: product.images[0] || "/images/emi-phones.png",
                       })
                     }}
                     className={`p-2 rounded-full backdrop-blur-sm transition ${

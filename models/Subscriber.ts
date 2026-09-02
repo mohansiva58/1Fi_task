@@ -1,6 +1,12 @@
-import mongoose, { Schema, models, model } from 'mongoose'
+import mongoose, { Schema, models, model, Model, Document } from 'mongoose'
 
-const SubscriberSchema = new Schema(
+interface ISubscriber extends Document {
+  email: string
+  name?: string
+  createdAt: Date
+}
+
+const SubscriberSchema = new Schema<ISubscriber>(
   {
     email: { type: String, required: true, unique: true, index: true },
     name: { type: String },
@@ -9,4 +15,5 @@ const SubscriberSchema = new Schema(
   { collection: 'newsletter_subscribers' }
 )
 
-export default models.Subscriber || model('Subscriber', SubscriberSchema)
+const Subscriber = (models.Subscriber as Model<ISubscriber>) || model<ISubscriber>('Subscriber', SubscriberSchema)
+export default Subscriber

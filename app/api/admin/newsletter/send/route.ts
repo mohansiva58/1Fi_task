@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     await sendEmail({
       to: recipientEmail,
       subject: `${discount}% OFF - Exclusive Offer Just For You! 🎉`,
-      type: 'promotional',
+      type: 'welcome',
       data: {
         name: recipientName,
         discount,

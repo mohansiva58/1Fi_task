@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema } from "mongoose"
+import mongoose, { Model, Schema } from "mongoose"
 
 export interface IEmiPlan {
   monthlyAmount: number
@@ -24,7 +24,7 @@ export interface IProductVariant {
   image?: string
 }
 
-export interface IProduct extends Omit<Document, "model"> {
+export interface IProduct {
   slug: string
   brand: string
   model: string
@@ -101,7 +101,7 @@ const Product: Model<IProduct> = mongoose.models.Product || mongoose.model<IProd
 export default Product
 export { ProductSchema }
 
-export function productToJSON(product: IProduct) {
+export function productToJSON(product: IProduct & { toObject?: () => Record<string, unknown>; _id?: { toString(): string } }) {
   const value = product.toObject ? product.toObject() : product
   return { ...value, _id: value._id?.toString(), id: value._id?.toString() }
 }

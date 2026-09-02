@@ -78,7 +78,7 @@ export default function CartPage() {
                       {/* Quantity Selector */}
                       <div className="flex items-center gap-2 mt-4">
                         <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                          onClick={() => handleQuantityChange(Number(item.id), item.quantity - 1)}
                           className="p-1 hover:bg-gray-100 rounded transition"
                           aria-label="Decrease quantity"
                         >
@@ -89,12 +89,12 @@ export default function CartPage() {
                           min="1"
                           value={item.quantity}
                           onChange={(e) =>
-                            handleQuantityChange(item.id, Math.max(1, Number.parseInt(e.target.value) || 1))
+                            handleQuantityChange(Number(item.id), Math.max(1, Number.parseInt(e.target.value) || 1))
                           }
                           className="w-12 px-2 py-1 border border-gray-300 rounded text-center"
                         />
                         <button
-                          onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                          onClick={() => handleQuantityChange(Number(item.id), item.quantity + 1)}
                           className="p-1 hover:bg-gray-100 rounded transition"
                           aria-label="Increase quantity"
                         >

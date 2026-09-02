@@ -27,7 +27,7 @@ function getRedisClient(): Redis | null {
 
     // Extract host and port from URL
     const [host, portStr] = redisUrl.split(':')
-    const port = parseInt(portStr, 10)
+    const port = parseInt(portStr || "6379", 10)
 
     redis = new Redis({
       host,
