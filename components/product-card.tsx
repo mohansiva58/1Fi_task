@@ -11,21 +11,29 @@ interface ProductCardProps {
   product: {
     id: number | string
     name: string
-    price: number
+    price?: number
     mrp?: number
     discount?: number
-    image: string
-    colors: string[]
+    image?: string
+    images?: string[]
+    colors?: string[]
+    variants?: { id: string; name: string; color: string; salePrice: number; mrp: number; stock: number; image?: string }[]
+    slug?: string
     stockQuantity?: number
     inStock?: boolean
   }
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
+  const colors = product.colors || product.variants?.map((variant) => variant.color) || []
+  const firstVariant = product.variants?.[0]
+  const price = product.price ?? firstVariant?.salePrice ?? 0
+  const image = product.image || product.images?.[0] || "/images/emi-phones.png"
+  const [selectedColor, setSelectedColor] = useState(colors[0] || "Default")
   const { addItem } = useCart()
   const { isInWishlist, toggleWishlist } = useWishlist()
   const productId = product.id  // Keep as-is (string or number)
+  const productHref = product.slug ? `/products/${product.slug}` : `/product/${product.id}`
   const inWishlist = isInWishlist(productId)
   const isOutOfStock = product.stockQuantity === 0 || product.inStock === false
 
@@ -43,13 +51,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="group">
-      <Link href={`/product/${product.id}`} className="block">
+      <Link href={productHref} className="block">
   <div
     className="relative overflow-hidden bg-gray-200 rounded-lg mb-2 md:mb-3 cursor-pointer"
     style={{ aspectRatio: '3 / 4' }}
   >
           <Image
-            src={product.image || "/placeholder.svg"}
+            src={image}
             alt={product.name}
             fill
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 33vw"
@@ -69,7 +77,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation()
-                toggleWishlist({ id: productId, name: product.name, price: product.price, image: product.image })
+                toggleWishlist({ id: productId, name: product.name, price, image })
               }}
               className={`p-2 md:p-2 rounded-full opacity-0 group-hover:opacity-100 transition transform group-hover:scale-100 scale-75 ${
                 inWishlist ? "bg-red-500 text-white" : "bg-white text-black"
@@ -96,7 +104,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </Link>
 
-      <Link href={`/product/${product.id}`} className="hover:underline">
+      <Link href={productHref} className="hover:underline">
         <h3 className="text-xs md:text-base font-bold mb-1 md:mb-2 line-clamp-2 leading-tight">{product.name}</h3>
       </Link>
 
@@ -108,7 +116,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <p className="text-xs md:text-base text-gray-400 line-through">₹{product.mrp.toLocaleString("en-IN")}</p>
             </>
           )}
-          <p className="font-bold text-sm md:text-xl">₹{product.price.toLocaleString("en-IN")}</p>
+          <p className="font-bold text-sm md:text-xl">₹{price.toLocaleString("en-IN")}</p>
           {product.discount && (
             <span className="text-xs md:text-sm text-red-600 font-bold">{product.discount}%</span>
           )}
@@ -116,7 +124,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       <div className="flex gap-1 md:gap-2 flex-wrap">
-        {product.colors.map((color) => (
+        {colors.map((color) => (
           <button
             key={color}
             onClick={() => setSelectedColor(color)}

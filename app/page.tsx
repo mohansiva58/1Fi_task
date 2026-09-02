@@ -1,109 +1,36 @@
 "use client"
 
-import { HeroSection } from "@/components/hero-section-clean" 
-// import HeroSection from "@/components/hero-section-clean"// Main hero carousel
-import Footer from "@/components/footer"
-import { motion } from "framer-motion"
-import CategoriesGrid from "@/components/categories-grid"
-import { useRouter } from "next/navigation"
-import dynamic from "next/dynamic"
-import { SpinnerCenter } from "@/components/spinner"
+import Image from "next/image"
+import Link from "next/link"
+import { ArrowRight, BadgeCheck, Calculator, ShieldCheck, Smartphone } from "lucide-react"
 
-// Lazy load heavy components for better initial page load
-const NewArrivals = dynamic(() => import("@/components/new-arrivals"), {
-  loading: () => <div className="py-12 text-center text-gray-500">Loading products...</div>
-})
+const benefits = [
+  { icon: Calculator, title: "Plans that fit", copy: "Choose a tenure that works with your monthly budget." },
+  { icon: ShieldCheck, title: "Backed by your investments", copy: "Unlock better access using eligible mutual fund holdings." },
+  { icon: BadgeCheck, title: "Clear from day one", copy: "See the total payable, fees and cashback before you apply." },
+]
 
-const Newsletter = dynamic(() => import("@/components/newsletter"), {
-  ssr: false,
-  loading: () => <div className="py-12"></div>
-})
-
-const PersonalizedSuggestions = dynamic(() => import("@/components/personalized-suggestions"), {
-  ssr: false,
-  loading: () => <SpinnerCenter />
-})
-
-const RecommendationsSection = dynamic(() => import("@/components/recommendations-section"), {
-  ssr: false,
-  loading: () => <SpinnerCenter />
-})
+const featured = [
+  { name: "iPhone 15", label: "Flagship performance", price: "₹2,499/mo", tone: "bg-[#e9eef8]" },
+  { name: "Galaxy S24", label: "AI-powered everyday", price: "₹2,099/mo", tone: "bg-[#e9f1ed]" },
+  { name: "Pixel 8a", label: "The smart choice", price: "₹1,599/mo", tone: "bg-[#f3eee6]" },
+]
 
 export default function Home() {
-  const router = useRouter()
-
-  return (
-    <>
-      <main className="bg-white pb-20 md:pb-0">
-        <HeroSection />
-        <CategoriesGrid />
-        <RecommendationsSection />
-        {/* Trending Section */}
-        <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="flex flex-col lg:flex-row gap-12"
-            >
-              {/* Large featured image */}
-              <div className="lg:w-1/2">
-                <div 
-                  className="relative rounded-[40px] overflow-hidden aspect-[4/5] group cursor-pointer"
-                  onClick={() => router.push('/shop')}
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1637067751055-4c75acba9936?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMG1vZGVsJTIwcGhvdG9zfGVufDB8fDB8fHww"
-                    alt="Trending look"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-8 left-8 right-8">
-                    <span className="text-white/80 text-sm tracking-wide uppercase mb-2 block">Trending Now</span>
-                    <h3 className="text-white text-3xl font-light">The Oversized Edit</h3>
-                  </div>
-                </div>
-              </div>
-
-              {/* Grid of smaller images */}
-              <div className="lg:w-1/2 grid grid-cols-2 gap-6">
-                {[
-                  { img: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=600&q=80", title: "Casual Luxe", category: "Shirt" },
-                  { img: "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&q=80", title: "Power Suits", category: "Jacket" },
-                  { img: "https://images.unsplash.com/photo-1523205565295-f8e91625443b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFzaGlvbiUyMG1vZGVsJTIwbWVufGVufDB8fDB8fHww", title: "Evening Glam", category: "Polo" },
-                  { img: "https://plus.unsplash.com/premium_photo-1727942418440-d085b3b5f065?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZmFzaGlvbiUyMG1vZGVsJTIwbWVufGVufDB8fDB8fHww", title: "Boho Spirit", category: "Sweatshirt" },
-                ].map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group cursor-pointer"
-                    onClick={() => router.push(`/shop?category=${item.category}`)}
-                  >
-                    <div className="rounded-3xl overflow-hidden aspect-square mb-3">
-                      <img
-                        src={item.img}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    </div>
-                    <h4 className="text-sm font-medium text-black group-hover:text-neutral-600 transition-colors">
-                      {item.title}
-                    </h4>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-        <NewArrivals />
-        <PersonalizedSuggestions />
-        <Newsletter />
-      </main>
-      <Footer />
-    </>
-  )
+  return <main className="min-h-screen bg-[#fafaf8] text-[#111827]">
+    <section className="relative overflow-hidden bg-[#12233f] text-white">
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-[1.05fr_.95fr] md:px-10 md:py-28">
+        <div className="relative z-10">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-blue-100"><Smartphone size={16} /> Device financing, made simple</div>
+          <h1 className="max-w-2xl text-5xl font-semibold tracking-[-.05em] md:text-7xl">Your next phone, <span className="text-[#8dd3b7]">on your terms.</span></h1>
+          <p className="mt-6 max-w-xl text-lg leading-8 text-blue-100">Shop the latest smartphones and pick an EMI plan backed by your mutual fund investments. Transparent, flexible and built around you.</p>
+          <div className="mt-9 flex flex-wrap gap-4"><Link href="/shop" className="inline-flex items-center gap-2 rounded-full bg-[#8dd3b7] px-6 py-3 font-semibold text-[#10213b] transition hover:bg-white">Explore phones <ArrowRight size={18} /></Link><Link href="/about" className="rounded-full border border-white/30 px-6 py-3 font-medium transition hover:bg-white/10">How it works</Link></div>
+          <p className="mt-8 text-sm text-blue-200">No hidden charges · 3,000+ happy customers · Secure checkout</p>
+        </div>
+        <div className="relative mx-auto w-full max-w-xl"><div className="absolute -inset-8 rounded-full bg-[#8dd3b7]/20 blur-3xl" /><Image src="/images/emi-phones.png" alt="Three smartphones available with EMI plans" width={900} height={600} className="relative w-full rounded-[2rem] object-cover shadow-2xl" priority /></div>
+      </div>
+    </section>
+    <section className="mx-auto max-w-7xl px-6 py-16 md:px-10"><div className="grid gap-5 md:grid-cols-3">{benefits.map(({ icon: Icon, title, copy }) => <div key={title} className="rounded-2xl border border-[#e8e7e2] bg-white p-6"><Icon className="mb-7 text-[#237b6a]" size={24} /><h2 className="text-lg font-semibold">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-500">{copy}</p></div>)}</div></section>
+    <section className="mx-auto max-w-7xl px-6 pb-20 md:px-10"><div className="mb-8 flex items-end justify-between"><div><p className="text-sm font-semibold uppercase tracking-[.18em] text-[#237b6a]">The phone edit</p><h2 className="mt-2 text-3xl font-semibold tracking-tight">Find your perfect fit</h2></div><Link href="/shop" className="hidden items-center gap-2 text-sm font-semibold md:flex">View all phones <ArrowRight size={16} /></Link></div><div className="grid gap-5 md:grid-cols-3">{featured.map((phone, index) => <Link href="/shop" key={phone.name} className={`group overflow-hidden rounded-3xl ${phone.tone}`}><div className="flex min-h-[270px] items-center justify-center p-8"><Image src="/images/emi-phones.png" alt={phone.name} width={600} height={400} className={`w-full object-cover mix-blend-multiply transition duration-500 group-hover:scale-105 ${index === 0 ? "object-left" : index === 1 ? "object-center" : "object-right"}`} /></div><div className="bg-white p-5"><p className="text-sm text-slate-500">{phone.label}</p><div className="mt-2 flex items-center justify-between"><h3 className="font-semibold">{phone.name}</h3><span className="font-semibold text-[#237b6a]">{phone.price}</span></div></div></Link>)}</div></section>
+  </main>
 }
