@@ -111,7 +111,7 @@ export default function NewProductPage() {
 
     try {
       for (let i = 0; i < files.length; i++) {
-        const file = files[i]
+        const file = files[i]!
 
         // Validate file type
         if (!file.type.startsWith("image/")) {

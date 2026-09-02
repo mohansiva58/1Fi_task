@@ -34,4 +34,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: error.code === 11000 ? 'Slug already exists' : 'Unable to create product' }, { status: error.code === 11000 ? 409 : 500 })
   }
 }
-EOF

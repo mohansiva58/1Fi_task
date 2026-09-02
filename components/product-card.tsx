@@ -42,8 +42,8 @@ export default function ProductCard({ product }: ProductCardProps) {
     addItem({
       id: productId,
       name: product.name,
-      price: product.price,
-      image: product.image,
+      price,
+      image,
       color: selectedColor,
       quantity: 1,
     })

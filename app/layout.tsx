@@ -2,8 +2,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import AuthProvider from "@/components/auth-provider"
-import ConditionalNav from "@/components/conditional-nav"
 import { ErrorBoundary } from "@/components/error-boundary"
 import "./globals.css"
 
@@ -11,8 +9,8 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Refero - Premium Hoodies & Apparel",
-  description: "Shop exclusive unisex hoodies and streetwear from Refero. Premium quality, sustainable fashion.",
+  title: "1Fi | Smarter purchases, flexible EMIs",
+  description: "Shop smartphones with transparent EMI plans backed by your mutual fund investments.",
   generator: 'v0.app',
   icons: {
     icon: [
@@ -44,10 +42,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${_geist.className} antialiased`}>
         <ErrorBoundary>
-          <AuthProvider>
-            <ConditionalNav />
-            {children}
-          </AuthProvider>
+          {children}
         </ErrorBoundary>
         <Analytics />
       </body>

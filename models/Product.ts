@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from 'mongoose'
+import mongoose, { Document, Model, Schema } from "mongoose"
 
 export interface IEmiPlan {
   monthlyAmount: number
@@ -24,7 +24,7 @@ export interface IProductVariant {
   image?: string
 }
 
-export interface IProduct extends Document {
+export interface IProduct extends Omit<Document, "model"> {
   slug: string
   brand: string
   model: string
@@ -33,7 +33,7 @@ export interface IProduct extends Document {
   longDescription: string
   images: string[]
   highlights: string[]
-  specifications: Record<string, any>
+  specifications: Record<string, string | string[]>
   variants: IProductVariant[]
   emiPlans: IEmiPlan[]
   rating: number
@@ -82,22 +82,22 @@ const ProductSchema = new Schema<IProduct>({
   images: [{ type: String, trim: true }],
   highlights: [{ type: String, trim: true }],
   specifications: { type: Schema.Types.Mixed, default: {} },
-  variants: { type: [VariantSchema], required: true, validate: [(v: IProductVariant[]) => v.length >= 2, 'At least two variants are required'] },
-  emiPlans: { type: [EmiPlanSchema], required: true, validate: [(v: IEmiPlan[]) => v.length >= 3, 'At least three EMI plans are required'] },
+  variants: { type: [VariantSchema], required: true, validate: [(v: IProductVariant[]) => v.length >= 2, "At least two variants are required"] },
+  emiPlans: { type: [EmiPlanSchema], required: true, validate: [(v: IEmiPlan[]) => v.length >= 3, "At least three EMI plans are required"] },
   rating: { type: Number, default: 0, min: 0, max: 5 },
   reviews: { type: Number, default: 0, min: 0 },
   inStock: { type: Boolean, default: true, index: true },
   stockQuantity: { type: Number, default: 0, min: 0 },
-  category: { type: String, default: 'Smartphones', trim: true, index: true },
+  category: { type: String, default: "Smartphones", trim: true, index: true },
   tags: [{ type: String, trim: true, lowercase: true }],
   viewCount: { type: Number, default: 0, min: 0 },
   soldCount: { type: Number, default: 0, min: 0 },
 }, { timestamps: true })
 
-ProductSchema.index({ name: 'text', brand: 'text', description: 'text', tags: 'text' })
-ProductSchema.index({ category: 1, inStock: 1, 'variants.salePrice': 1 })
+ProductSchema.index({ name: "text", brand: "text", description: "text", tags: "text" })
+ProductSchema.index({ category: 1, inStock: 1, "variants.salePrice": 1 })
 
-const Product: Model<IProduct> = mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema)
+const Product: Model<IProduct> = mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema)
 export default Product
 export { ProductSchema }
 
@@ -105,7 +105,3 @@ export function productToJSON(product: IProduct) {
   const value = product.toObject ? product.toObject() : product
   return { ...value, _id: value._id?.toString(), id: value._id?.toString() }
 }
-EOF
-
-cat > /tmp/noop <<'EOF'
-EOF
