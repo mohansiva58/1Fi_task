@@ -10,6 +10,15 @@ export interface IOrderItem {
   image: string
 }
 
+export interface IEmiOrderDetails {
+  tenureMonths: number
+  interestRate: number
+  monthlyAmount: number
+  totalPayable: number
+  provider?: string
+  cashbackAmount?: number
+}
+
 export interface IOrder extends Document {
   userId: string
   userEmail: string
@@ -25,6 +34,8 @@ export interface IOrder extends Document {
     pincode: string
   }
   paymentMethod: string
+  paymentMode?: string
+  emi?: IEmiOrderDetails
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
   paymentDetails?: {
     razorpayOrderId?: string
@@ -69,6 +80,15 @@ const OrderSchema = new Schema<IOrder>(
       pincode: { type: String, required: true },
     },
     paymentMethod: { type: String, required: true },
+    paymentMode: { type: String, default: 'FULL' },
+    emi: {
+      tenureMonths: { type: Number },
+      interestRate: { type: Number },
+      monthlyAmount: { type: Number },
+      totalPayable: { type: Number },
+      provider: { type: String },
+      cashbackAmount: { type: Number },
+    },
     paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
     paymentDetails: {
       razorpayOrderId: { type: String },
@@ -93,7 +113,6 @@ const OrderSchema = new Schema<IOrder>(
   }
 )
 
-OrderSchema.index({ orderNumber: 1 })
 OrderSchema.index({ userId: 1 })
 OrderSchema.index({ userEmail: 1 })
 OrderSchema.index({ orderStatus: 1 })

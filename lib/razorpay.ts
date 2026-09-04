@@ -1,14 +1,42 @@
 import Razorpay from "razorpay"
 
-// Initialize Razorpay instance
-export const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
+let razorpayInstance: Razorpay | null = null
+
+export function getRazorpayClient(): Razorpay {
+  const keyId = process.env.RAZORPAY_KEY_ID
+  const keySecret = process.env.RAZORPAY_KEY_SECRET
+
+  if (!keyId || !keySecret) {
+    throw new Error("Razorpay credentials (RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET) are missing in environment variables.")
+  }
+
+  if (!razorpayInstance) {
+    razorpayInstance = new Razorpay({
+      key_id: keyId,
+      key_secret: keySecret,
+    })
+  }
+
+  return razorpayInstance
+}
+
+// Lazy getter proxy for backward compatibility with direct razorpay imports
+export const razorpay = new Proxy({} as Razorpay, {
+  get(_target, prop) {
+    const client = getRazorpayClient()
+    const val = (client as any)[prop]
+    if (typeof val === "function") {
+      return val.bind(client)
+    }
+    return val
+  },
 })
 
 // Razorpay configuration
 export const RAZORPAY_CONFIG = {
-  keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+  get keyId() {
+    return process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || ""
+  },
   currency: "INR",
   name: "EMI Platform",
   description: "Electronics with flexible EMI plans",
@@ -26,8 +54,9 @@ export const RAZORPAY_CONFIG = {
 // Create Razorpay order
 export async function createRazorpayOrder(amount: number, receipt?: string) {
   try {
-    const order = await razorpay.orders.create({
-      amount: amount * 100, // Amount in paise (multiply by 100)
+    const client = getRazorpayClient()
+    const order = await client.orders.create({
+      amount: Math.round(amount * 100), // Amount in paise (multiply by 100)
       currency: RAZORPAY_CONFIG.currency,
       receipt: receipt || `order_${Date.now()}`,
       notes: {
@@ -48,9 +77,15 @@ export function verifyPaymentSignature(
   signature: string
 ): boolean {
   try {
+    const secret = process.env.RAZORPAY_KEY_SECRET
+    if (!secret) {
+      console.error("RAZORPAY_KEY_SECRET is missing during signature verification")
+      return false
+    }
+
     const crypto = require("crypto")
     const generatedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+      .createHmac("sha256", secret)
       .update(`${orderId}|${paymentId}`)
       .digest("hex")
 
@@ -64,7 +99,8 @@ export function verifyPaymentSignature(
 // Fetch payment details
 export async function getPaymentDetails(paymentId: string) {
   try {
-    const payment = await razorpay.payments.fetch(paymentId)
+    const client = getRazorpayClient()
+    const payment = await client.payments.fetch(paymentId)
     return payment
   } catch (error) {
     console.error("Error fetching payment details:", error)
@@ -75,8 +111,9 @@ export async function getPaymentDetails(paymentId: string) {
 // Refund payment
 export async function refundPayment(paymentId: string, amount?: number) {
   try {
-    const refund = await razorpay.payments.refund(paymentId, {
-      amount: amount ? amount * 100 : undefined, // Amount in paise
+    const client = getRazorpayClient()
+    const refund = await client.payments.refund(paymentId, {
+      amount: amount ? Math.round(amount * 100) : undefined, // Amount in paise
       speed: "normal",
     })
     return refund
@@ -85,3 +122,4 @@ export async function refundPayment(paymentId: string, amount?: number) {
     throw error
   }
 }
+

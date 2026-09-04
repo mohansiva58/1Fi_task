@@ -7,61 +7,60 @@
 
 import Redis from 'ioredis'
 
-// Redis client configuration
-let redis: Redis | null = null
+// Global Redis client singleton to persist across Next.js re-evaluations
+const globalForRedis = globalThis as unknown as {
+  redisClient: Redis | null
+  redisInitAttempted: boolean
+}
+
 const memoryCache = new Map<string, { data: any; expiry: number }>()
 
 // Initialize Redis connection
-function getRedisClient(): Redis | null {
-  if (redis) return redis
+export function getRedisClient(): Redis | null {
+  if (globalForRedis.redisClient) {
+    return globalForRedis.redisClient
+  }
 
   try {
-    // Parse Redis URL and password from environment
     const redisUrl = process.env.REDIS_URL
     const redisPassword = process.env.REDIS_PASSWORD
 
     if (!redisUrl || !redisPassword) {
-      console.warn('[Redis] No credentials found, using in-memory cache')
+      if (!globalForRedis.redisInitAttempted) {
+        console.warn('[Redis] No credentials found in environment, using in-memory cache fallback')
+        globalForRedis.redisInitAttempted = true
+      }
       return null
     }
 
-    // Extract host and port from URL
     const [host, portStr = ''] = redisUrl.split(':')
-    const port = parseInt(portStr, 10)
+    const port = parseInt(portStr, 10) || 6379
 
-    redis = new Redis({
+    const client = new Redis({
       host,
       port,
       password: redisPassword,
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000)
-        return delay
-      },
+      retryStrategy: (times) => Math.min(times * 100, 2000),
       maxRetriesPerRequest: 3,
-      enableReadyCheck: true,
-      lazyConnect: true,
+      connectTimeout: 5000,
+      enableOfflineQueue: true,
     })
 
-    redis.on('connect', () => {
+    client.on('connect', () => {
       console.log('✅ [Redis] Connected successfully')
     })
 
-    redis.on('error', (err) => {
+    client.on('error', (err) => {
       console.error('❌ [Redis] Connection error:', err.message)
-      redis = null
     })
 
-    redis.on('ready', () => {
+    client.on('ready', () => {
       console.log('🚀 [Redis] Ready to accept commands')
     })
 
-    // Connect to Redis
-    redis.connect().catch((err) => {
-      console.error('❌ [Redis] Failed to connect:', err.message)
-      redis = null
-    })
-
-    return redis
+    globalForRedis.redisClient = client
+    globalForRedis.redisInitAttempted = true
+    return client
   } catch (error) {
     console.error('[Redis] Initialization error:', error)
     return null
@@ -83,39 +82,38 @@ export async function getCache<T>(key: string): Promise<T | null> {
   try {
     const client = getRedisClient()
 
-    if (client && client.status === 'ready') {
-      // Try Redis first with timeout
-      const cached = await Promise.race([
-        client.get(key),
-        new Promise<null>((resolve) => setTimeout(() => resolve(null), 1000)) // 1 second timeout
-      ])
-      
-      if (cached && typeof cached === 'string') {
-        console.log(`✅ [Redis Cache] HIT: ${key}`)
-        return JSON.parse(cached) as T
-      }
-      
-      console.log(`❌ [Redis Cache] MISS: ${key}`)
-      return null
-    } else {
-      // Fallback to in-memory cache
-      const cached = memoryCache.get(key)
-      
-      if (cached) {
-        // Check if expired
-        if (Date.now() < cached.expiry) {
-          console.log(`✅ [Memory Cache] HIT: ${key}`)
-          return cached.data as T
-        } else {
-          // Remove expired entry
-          memoryCache.delete(key)
-          console.log(`⏰ [Memory Cache] EXPIRED: ${key}`)
+    if (client) {
+      try {
+        const cached = await Promise.race([
+          client.get(key),
+          new Promise<null>((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+        ])
+
+        if (cached && typeof cached === 'string') {
+          console.log(`✅ [Redis Cache] HIT: ${key}`)
+          return JSON.parse(cached) as T
         }
+
+        console.log(`❌ [Redis Cache] MISS: ${key}`)
+        return null
+      } catch (err) {
+        console.warn(`⚠️ [Redis Cache] Get failed, falling back to memory:`, err instanceof Error ? err.message : err)
       }
-      
-      console.log(`❌ [Memory Cache] MISS: ${key}`)
-      return null
     }
+
+    // Fallback to in-memory cache
+    const cached = memoryCache.get(key)
+    if (cached) {
+      if (Date.now() < cached.expiry) {
+        console.log(`✅ [Memory Cache] HIT: ${key}`)
+        return cached.data as T
+      }
+      memoryCache.delete(key)
+      console.log(`⏰ [Memory Cache] EXPIRED: ${key}`)
+    }
+
+    console.log(`❌ [Memory Cache] MISS: ${key}`)
+    return null
   } catch (error) {
     console.error('[Cache] Get error:', error)
     return null
@@ -132,23 +130,27 @@ export async function setCache(
 ): Promise<void> {
   try {
     const client = getRedisClient()
+    const serialized = JSON.stringify(data)
 
-    if (client && client.status === 'ready') {
-      // Store in Redis with TTL and timeout
-      await Promise.race([
-        client.setex(key, ttlSeconds, JSON.stringify(data)),
-        new Promise((resolve) => setTimeout(resolve, 1000)) // 1 second timeout
-      ])
-      console.log(`💾 [Redis Cache] SET: ${key} (TTL: ${ttlSeconds}s)`)
-    } else {
-      // Fallback to in-memory cache
-      const expiry = Date.now() + ttlSeconds * 1000
-      memoryCache.set(key, { data, expiry })
-      console.log(`💾 [Memory Cache] SET: ${key} (TTL: ${ttlSeconds}s)`)
+    if (client) {
+      try {
+        await Promise.race([
+          client.setex(key, ttlSeconds, serialized),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+        ])
+        console.log(`💾 [Redis Cache] SET: ${key} (TTL: ${ttlSeconds}s)`)
+        return
+      } catch (err) {
+        console.warn(`⚠️ [Redis Cache] Set failed, saving to memory:`, err instanceof Error ? err.message : err)
+      }
     }
+
+    // Fallback to in-memory cache
+    const expiry = Date.now() + ttlSeconds * 1000
+    memoryCache.set(key, { data, expiry })
+    console.log(`💾 [Memory Cache] SET: ${key} (TTL: ${ttlSeconds}s)`)
   } catch (error) {
     console.error('[Cache] Set error:', error)
-    // Still try to cache in memory as fallback
     try {
       const expiry = Date.now() + ttlSeconds * 1000
       memoryCache.set(key, { data, expiry })
@@ -163,13 +165,17 @@ export async function deleteCache(key: string): Promise<void> {
   try {
     const client = getRedisClient()
 
-    if (client && client.status === 'ready') {
-      await client.del(key)
-      console.log(`🗑️ [Redis Cache] DELETE: ${key}`)
-    } else {
-      memoryCache.delete(key)
-      console.log(`🗑️ [Memory Cache] DELETE: ${key}`)
+    if (client) {
+      try {
+        await client.del(key)
+        console.log(`🗑️ [Redis Cache] DELETE: ${key}`)
+      } catch (err) {
+        console.warn(`⚠️ [Redis Cache] Delete failed:`, err instanceof Error ? err.message : err)
+      }
     }
+
+    memoryCache.delete(key)
+    console.log(`🗑️ [Memory Cache] DELETE: ${key}`)
   } catch (error) {
     console.error('[Cache] Delete error:', error)
   }
@@ -182,41 +188,44 @@ export async function deleteCachePattern(pattern: string): Promise<void> {
   try {
     const client = getRedisClient()
 
-    if (client && client.status === 'ready') {
-      // Use Redis SCAN to find matching keys
-      const keys: string[] = []
-      let cursor = '0'
+    if (client) {
+      try {
+        const keys: string[] = []
+        let cursor = '0'
 
-      do {
-        const [newCursor, foundKeys] = await client.scan(
-          cursor,
-          'MATCH',
-          pattern,
-          'COUNT',
-          100
-        )
-        cursor = newCursor
-        keys.push(...foundKeys)
-      } while (cursor !== '0')
+        do {
+          const [newCursor, foundKeys] = await client.scan(
+            cursor,
+            'MATCH',
+            pattern,
+            'COUNT',
+            100
+          )
+          cursor = newCursor
+          keys.push(...foundKeys)
+        } while (cursor !== '0')
 
-      if (keys.length > 0) {
-        await client.del(...keys)
-        console.log(`🗑️ [Redis Cache] DELETE PATTERN: ${pattern} (${keys.length} keys)`)
-      }
-    } else {
-      // Fallback to in-memory cache
-      const regex = new RegExp(pattern.replace('*', '.*'))
-      const keysToDelete: string[] = []
-      
-      memoryCache.forEach((_, key) => {
-        if (regex.test(key)) {
-          keysToDelete.push(key)
+        if (keys.length > 0) {
+          await client.del(...keys)
+          console.log(`🗑️ [Redis Cache] DELETE PATTERN: ${pattern} (${keys.length} keys)`)
         }
-      })
-      
-      keysToDelete.forEach(key => memoryCache.delete(key))
-      console.log(`🗑️ [Memory Cache] DELETE PATTERN: ${pattern} (${keysToDelete.length} keys)`)
+      } catch (err) {
+        console.warn(`⚠️ [Redis Cache] Delete pattern failed:`, err instanceof Error ? err.message : err)
+      }
     }
+
+    // Memory cache deletion
+    const regex = new RegExp(pattern.replace('*', '.*'))
+    const keysToDelete: string[] = []
+    
+    memoryCache.forEach((_, key) => {
+      if (regex.test(key)) {
+        keysToDelete.push(key)
+      }
+    })
+    
+    keysToDelete.forEach(key => memoryCache.delete(key))
+    console.log(`🗑️ [Memory Cache] DELETE PATTERN: ${pattern} (${keysToDelete.length} keys)`)
   } catch (error) {
     console.error('[Cache] Delete pattern error:', error)
   }
@@ -229,13 +238,17 @@ export async function clearCache(): Promise<void> {
   try {
     const client = getRedisClient()
 
-    if (client && client.status === 'ready') {
-      await client.flushdb()
-      console.log('🧹 [Redis Cache] CLEARED ALL')
-    } else {
-      memoryCache.clear()
-      console.log('🧹 [Memory Cache] CLEARED ALL')
+    if (client) {
+      try {
+        await client.flushdb()
+        console.log('🧹 [Redis Cache] CLEARED ALL')
+      } catch (err) {
+        console.warn(`⚠️ [Redis Cache] Flush failed:`, err instanceof Error ? err.message : err)
+      }
     }
+
+    memoryCache.clear()
+    console.log('🧹 [Memory Cache] CLEARED ALL')
   } catch (error) {
     console.error('[Cache] Clear error:', error)
   }
@@ -248,25 +261,31 @@ export async function getCacheStats() {
   try {
     const client = getRedisClient()
 
-    if (client && client.status === 'ready') {
-      const info = await client.info('stats')
-      const dbSize = await client.dbsize()
-      const memory = await client.info('memory')
-      
-      return {
-        type: 'redis',
-        size: dbSize,
-        info: info,
-        memory: memory,
-        connected: client.status === 'ready',
+    if (client) {
+      try {
+        const [info, dbSize, memory] = await Promise.all([
+          client.info('stats').catch(() => ''),
+          client.dbsize().catch(() => 0),
+          client.info('memory').catch(() => ''),
+        ])
+
+        return {
+          type: 'redis',
+          size: dbSize,
+          info,
+          memory,
+          connected: client.status === 'ready' || client.status === 'connect',
+        }
+      } catch (err) {
+        console.warn(`⚠️ [Redis Cache] Stats failed:`, err instanceof Error ? err.message : err)
       }
-    } else {
-      return {
-        type: 'memory',
-        size: memoryCache.size,
-        keys: Array.from(memoryCache.keys()),
-        connected: false,
-      }
+    }
+
+    return {
+      type: 'memory',
+      size: memoryCache.size,
+      keys: Array.from(memoryCache.keys()),
+      connected: false,
     }
   } catch (error) {
     console.error('[Cache] Stats error:', error)
@@ -292,9 +311,12 @@ export async function testRedisConnection(): Promise<boolean> {
       return false
     }
 
-    await client.ping()
-    console.log('✅ [Redis] Connection test successful')
-    return true
+    const pong = await Promise.race([
+      client.ping(),
+      new Promise<string>((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000))
+    ])
+    console.log('✅ [Redis] Connection test successful:', pong)
+    return pong === 'PONG'
   } catch (error) {
     console.error('❌ [Redis] Connection test failed:', error)
     return false
@@ -305,9 +327,9 @@ export async function testRedisConnection(): Promise<boolean> {
  * Close Redis connection
  */
 export async function closeRedis(): Promise<void> {
-  if (redis) {
-    await redis.quit()
-    redis = null
+  if (globalForRedis.redisClient) {
+    await globalForRedis.redisClient.quit()
+    globalForRedis.redisClient = null
     console.log('👋 [Redis] Connection closed')
   }
 }

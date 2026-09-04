@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import connectDB from "@/lib/mongodb"
 import ElectronicsProduct from "@/models/ElectronicsProduct"
-import { normalizeEmiPlans } from "@/lib/emi"
+import { getEmiPlanForTenure } from "@/lib/emi"
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     await connectDB()
     const product = await ElectronicsProduct.findOne({ slug, isActive: true }).lean()
     const variant = product?.variants.find((item) => item.sku === sku)
-    const plan = variant && normalizeEmiPlans(variant.price, variant.emiPlans).find((item) => item.tenureMonths === tenureMonths)
+    const plan = variant ? getEmiPlanForTenure(variant.price, tenureMonths) : null
 
     if (!product || !variant || !plan) {
       return NextResponse.json({ success: false, error: "Selected product, variant, or EMI plan was not found" }, { status: 404 })
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         interestRate: plan.interestRate,
         cashbackAmount: plan.cashbackAmount,
         provider: plan.provider,
-        totalPayable: plan.monthlyAmount * plan.tenureMonths,
+        totalPayable: plan.totalPayable,
       },
     })
   } catch (error) {

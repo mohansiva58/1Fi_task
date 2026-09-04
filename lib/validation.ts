@@ -60,11 +60,24 @@ export const createProductSchema = z.object({
 export const updateProductSchema = createProductSchema.partial()
 
 // Payment validation schemas
-export const createPaymentOrderSchema = z.object({
+export const standardPaymentOrderSchema = z.object({
   amount: z.number().positive("Amount must be greater than 0"),
   currency: z.string().default('INR'),
   receipt: z.string().optional(),
 })
+
+export const emiPaymentOrderSchema = z.object({
+  productId: z.string().min(1, "Product ID is required"),
+  variantSku: z.string().min(1, "Variant SKU is required"),
+  tenureMonths: z.number().int().positive("Tenure months must be a positive integer"),
+  receipt: z.string().optional(),
+  customerDetails: z.any().optional(),
+})
+
+export const createPaymentOrderSchema = z.union([
+  standardPaymentOrderSchema,
+  emiPaymentOrderSchema,
+])
 
 export const verifyPaymentSchema = z.object({
   razorpay_order_id: z.string().min(1),
