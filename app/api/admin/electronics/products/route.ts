@@ -22,8 +22,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const variants = Array.isArray(body.variants) ? body.variants : []
-    if (!body.name || !body.brand || !["smartphones", "laptops", "tablets", "accessories"].includes(body.category) || variants.length < 2) {
-      return NextResponse.json({ success: false, error: "Name, brand, valid category, and at least two variants are required" }, { status: 400 })
+    if (!body.name || !body.brand || !["smartphones", "laptops", "earpods", "watches", "tablets", "accessories"].includes(body.category) || variants.length < 1) {
+      return NextResponse.json({ success: false, error: "Name, brand, valid category, and at least one variant are required" }, { status: 400 })
     }
 
     const slug = String(body.slug || body.name).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")

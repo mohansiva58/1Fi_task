@@ -98,17 +98,14 @@ function ShopPageContent() {
 
   // Get unique categories from products (for filter sidebar)
   const categories = useMemo(() => {
-    const cats = new Set<string>()
+    const defaultCats = ["smartphones", "laptops", "earpods", "watches", "tablets", "accessories"]
+    const cats = new Set<string>(defaultCats)
     products.forEach((p) => {
-      // Normalize category names - remove plural 's' and trim
-      let category = p.category || "Others"
-      // Remove trailing 's' but keep it if it's part of the word (like "Jeans")
-      if (category.endsWith("s") && !["Jeans"].includes(category)) {
-        category = category.slice(0, -1)
+      if (p.category) {
+        cats.add(p.category.toLowerCase().trim())
       }
-      cats.add(category)
     })
-    return ["All", ...Array.from(cats).sort()]
+    return ["All", ...Array.from(cats)]
   }, [products])
 
   // Only apply price filter client-side (everything else is server-side)
@@ -261,6 +258,7 @@ function ShopPageContent() {
                             }`}
                           >
                             {cat}
+                            <span className="capitalize">{cat}</span>
                           </button>
                         ))}
                       </div>
@@ -325,6 +323,7 @@ function ShopPageContent() {
                       >
                         <div className="flex items-center justify-between">
                           <span>{cat}</span>
+                          <span className="capitalize">{cat}</span>
                           {selectedCategory === cat && (
                             <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                           )}
@@ -479,9 +478,11 @@ function ShopPageContent() {
                               mrp: product.mrp,
                               discount: product.discount,
                               image: (product.images && product.images.length > 0 && product.images[0]) ? product.images[0] : "/placeholder.jpg",
+                              images: product.images || [],
                               colors: product.colors || [],
                               stockQuantity: product.stockQuantity,
                               inStock: product.inStock,
+                              emiPlans: (product as any).emiPlans || [],
                             }}
                           />
                           {/* Premium hover overlay */}
@@ -510,9 +511,11 @@ function ShopPageContent() {
                                 mrp: product.mrp,
                                 discount: product.discount,
                                 image: (product.images && product.images.length > 0 && product.images[0]) ? product.images[0] : "/placeholder.jpg",
+                                images: product.images || [],
                                 colors: product.colors || [],
                                 stockQuantity: product.stockQuantity,
                                 inStock: product.inStock,
+                                emiPlans: (product as any).emiPlans || [],
                               }}
                             />
                           </div>

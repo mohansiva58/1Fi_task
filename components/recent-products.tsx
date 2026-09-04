@@ -98,9 +98,11 @@ export default function RecentProducts() {
                   mrp: Number(product.mrp) || Number(product.price) || 0,
                   discount: Number(product.discount) || 0,
                   image: product.images?.[0] || "/placeholder.svg",
+                  images: product.images || [],
                   colors: product.colors || [],
                   stockQuantity: product.stockQuantity,
                   inStock: product.inStock,
+                  emiPlans: (product as any).emiPlans || [],
                 }}
               />
             </motion.div>

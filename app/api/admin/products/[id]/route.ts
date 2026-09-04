@@ -25,6 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const collections = await conn.connection.db.listCollections().toArray()
     const productCollections = collections
       .filter(c => c.name.startsWith('products'))
+      .filter(c => c.name.startsWith('products') || c.name.startsWith('electronics'))
       .map(c => c.name)
 
     // Search across all collections
@@ -72,6 +73,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const collections = await conn.connection.db.listCollections().toArray()
     const productCollections = collections
       .filter(c => c.name.startsWith('products'))
+      .filter(c => c.name.startsWith('products') || c.name.startsWith('electronics'))
       .map(c => c.name)
 
     // Find and update product across all collections
@@ -95,6 +97,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
     // Invalidate product cache
     await deleteCachePattern('v2:products:*')
+    await deleteCachePattern('v5:electronics:*')
     await deleteCache(`v2:product:${id}`)
     console.log('Cache invalidated for product:', id)
 
@@ -125,6 +128,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     const collections = await conn.connection.db.listCollections().toArray()
     const productCollections = collections
       .filter(c => c.name.startsWith('products'))
+      .filter(c => c.name.startsWith('products') || c.name.startsWith('electronics'))
       .map(c => c.name)
 
     // Find and delete product across all collections
@@ -144,6 +148,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
     // Invalidate product cache
     await deleteCachePattern('v2:products:*')
+    await deleteCachePattern('v5:electronics:*')
     await deleteCache(`v2:product:${id}`)
     console.log('Cache invalidated for deleted product:', id)
 

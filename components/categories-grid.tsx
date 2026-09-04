@@ -12,13 +12,14 @@ type Category = {
 const categories: Category[] = [
   { name: "Smartphones", category: "smartphones", image: "/categorie/smartphones.png" },
   { name: "Laptops", category: "laptops", image: "/categorie/laptops.png" },
-  { name: "iPhone 17 Pro", category: "smartphones", image: "/categorie/pods.png" },
-  { name: "MacBook Air", category: "laptops", image: "/categorie/macbook.png" },
+  { name: "EarPods", category: "earpods", image: "/categorie/pods.png" },
   { name: "Watches", category: "watches", image: "/categorie/watches.png" },
-  { name: "Tablets", category: "tablets", image: "/categorie/tablets.png" }
+  { name: "Tablets", category: "tablets", image: "/categorie/tablets.png" },
+  { name: "Accessories", category: "accessories", image: "/categorie/macbook.png" },
 ]
 
-export default function CategoriesGrid() {
+
+  export default function CategoriesGrid() {
   return (
     <section className="px-6 md:px-12 lg:px-24 py-12">
       <div className="max-w-7xl mx-auto">

@@ -126,6 +126,8 @@ export async function POST(request: Request) {
       items,
       shippingAddress,
       paymentMethod,
+      paymentMode: body.paymentMode || (body.emi ? "EMI" : "FULL"),
+      emi: body.emi,
       paymentStatus: paymentStatus || "pending",
       paymentDetails: paymentDetails || {},
       orderStatus: paymentMethod === "online" && paymentStatus === "paid" ? "confirmed" : "pending",

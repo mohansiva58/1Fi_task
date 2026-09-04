@@ -26,7 +26,7 @@ export interface IElectronicsProduct extends Document {
   name: string
   slug: string
   brand: string
-  category: "smartphones" | "laptops" | "tablets" | "accessories"
+  category: "smartphones" | "laptops" | "earpods" | "watches" | "tablets" | "accessories"
   description: string
   features: string[]
   images: string[]
@@ -72,13 +72,17 @@ const ElectronicsProductSchema = new Schema<IElectronicsProduct>(
     category: {
       type: String,
       required: true,
-      enum: ["smartphones", "laptops", "tablets", "accessories"],
+      enum: ["smartphones", "laptops", "earpods", "watches", "tablets", "accessories"],
       index: true,
     },
     description: { type: String, required: true, trim: true },
     features: { type: [String], default: [] },
     images: { type: [String], default: [] },
-    variants: { type: [VariantSchema], required: true, validate: [(variants: IElectronicsVariant[]) => variants.length >= 2, "At least two variants are required"] },
+    variants: {
+      type: [VariantSchema],
+      required: true,
+      validate: [(variants: IElectronicsVariant[]) => variants.length >= 1, "At least one variant is required"],
+    },
     isActive: { type: Boolean, default: true, index: true },
   },
   { timestamps: true, collection: "electronics_products" },

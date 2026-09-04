@@ -105,6 +105,13 @@ export async function POST(request: Request) {
     const providerMessage = error?.error?.description || error?.message
     const isAuthError = error?.statusCode === 401 || providerMessage === "Authentication failed"
     return NextResponse.json(
+      {
+        success: false,
+        error: isAuthError
+          ? "Payment gateway authentication failed. Please verify Razorpay credentials."
+          : (providerMessage || "Failed to create payment order"),
+      },
+      { status: isAuthError ? 401 : 500 }
     )
   }
 }
