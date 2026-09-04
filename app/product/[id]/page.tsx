@@ -84,7 +84,13 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   if (loading) return <main className="flex min-h-screen items-center justify-center text-sm text-gray-500">Loading product...</main>
   if (error || !product || !variant) return <main className="flex min-h-screen flex-col items-center justify-center gap-4"><p className="text-gray-600">{error || "Product not found"}</p><Link href="/shop" className="bg-black px-5 py-3 text-sm font-semibold text-white">Back to shop</Link></main>
 
-  const images = variant.images.length ? variant.images : product.images
+  const variantImgs = Array.isArray(variant.images) ? variant.images.filter(Boolean) : []
+  const productImgs = Array.isArray(product.images) ? product.images.filter(Boolean) : []
+  const allVariantImgs = Array.isArray(product.variants)
+    ? product.variants.flatMap((v) => v.images || []).filter(Boolean)
+    : []
+  const rawImages = Array.from(new Set([...variantImgs, ...productImgs, ...allVariantImgs]))
+  const images = rawImages.length > 0 ? rawImages : ["/placeholder.jpg"]
   const emiPlans: EmiPlan[] = getFixedEmiPlans(variant.price)
   const selectedPlan: EmiPlan = emiPlans.find((item) => item.tenureMonths === tenure) || emiPlans[0]
   const discount = variant.mrp > variant.price ? Math.round(((variant.mrp - variant.price) / variant.mrp) * 100) : 0

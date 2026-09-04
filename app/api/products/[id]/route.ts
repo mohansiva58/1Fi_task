@@ -40,13 +40,24 @@ export async function GET(request: Request, { params }: RouteContext) {
 
     if (!selectedVariant) return NextResponse.json({ success: false, error: "Product variant not found" }, { status: 404 })
 
+    const allProductImages = Array.from(
+      new Set([
+        ...(Array.isArray(product.images) ? product.images : []),
+        ...(Array.isArray(product.variants) ? product.variants.flatMap((v: any) => v.images || []) : []),
+      ])
+    ).filter(Boolean)
+
+    const variantImgs = Array.isArray(selectedVariant.images) && selectedVariant.images.length > 0
+      ? selectedVariant.images
+      : allProductImages
+
     const normalizedVariant = {
       ...selectedVariant,
       price: Number(selectedVariant.price) || 0,
       mrp: Number(selectedVariant.mrp) || Number(selectedVariant.price) || 0,
       stockQuantity: Number(selectedVariant.stockQuantity) || 0,
       inStock: selectedVariant.inStock !== false && Number(selectedVariant.stockQuantity) > 0,
-      images: selectedVariant.images?.length ? selectedVariant.images : product.images || [],
+      images: Array.from(new Set([...variantImgs, ...allProductImages])),
       emiPlans: normalizeEmiPlans(Number(selectedVariant.price) || 0, selectedVariant.emiPlans),
     }
     const flattenedProduct = {
@@ -55,18 +66,18 @@ export async function GET(request: Request, { params }: RouteContext) {
       price: normalizedVariant.price,
       mrp: normalizedVariant.mrp,
       discount: normalizedVariant.mrp ? Math.round(((normalizedVariant.mrp - normalizedVariant.price) / normalizedVariant.mrp) * 100) : 0,
-      images: normalizedVariant.images,
-      colors: product.variants?.map((variant) => variant.color) || [],
-      sizes: product.variants?.map((variant) => variant.storage).filter(Boolean) || [],
+      images: Array.from(new Set([...allProductImages, ...variantImgs])),
+      colors: product.variants?.map((variant: any) => variant.color) || [],
+      sizes: product.variants?.map((variant: any) => variant.storage).filter(Boolean) || [],
       stockQuantity: normalizedVariant.stockQuantity,
       inStock: normalizedVariant.inStock,
-      variants: product.variants?.map((variant) => ({
+      variants: product.variants?.map((variant: any) => ({
         ...variant,
         price: Number(variant.price) || 0,
         mrp: Number(variant.mrp) || Number(variant.price) || 0,
         stockQuantity: Number(variant.stockQuantity) || 0,
         inStock: variant.inStock !== false && Number(variant.stockQuantity) > 0,
-        images: variant.images?.length ? variant.images : product.images || [],
+        images: Array.isArray(variant.images) && variant.images.length ? variant.images : allProductImages,
         emiPlans: normalizeEmiPlans(Number(variant.price) || 0, variant.emiPlans),
       })),
     }
