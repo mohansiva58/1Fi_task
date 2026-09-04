@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
     const paginated = filtered.slice((page - 1) * limit, page * limit)
     const data = paginated.map((product) => {
       const variants = Array.isArray(product.variants) ? product.variants : []
+      const variant = variants[0]
       const productImgs = Array.isArray(product.images) ? product.images : []
       const variantImgs = variants.flatMap((item: any) => (Array.isArray(item.images) ? item.images : []))
       const combinedImages = Array.from(new Set([...productImgs, ...variantImgs])).filter(Boolean)
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
         price: variant?.price || 0,
         mrp: variant?.mrp || 0,
         discount: variant?.mrp ? Math.round(((variant.mrp - variant.price) / variant.mrp) * 100) : 0,
+        images: variant?.images || product.images || [],
         images: combinedImages.length > 0 ? combinedImages : ["/placeholder.jpg"],
         colors: variants.map((item) => item.color).filter(Boolean),
         sizes: variants.map((item) => item.storage).filter(Boolean),

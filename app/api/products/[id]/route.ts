@@ -60,6 +60,7 @@ export async function GET(request: Request, { params }: RouteContext) {
       images: Array.from(new Set([...variantImgs, ...allProductImages])),
       emiPlans: normalizeEmiPlans(Number(selectedVariant.price) || 0, selectedVariant.emiPlans),
     }
+
     const flattenedProduct = {
       ...product,
       _id: product._id.toString(),
