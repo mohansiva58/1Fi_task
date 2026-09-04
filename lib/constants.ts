@@ -1,14 +1,10 @@
 // Shared constants
 
 export const CATEGORIES = [
-  { name: "Shirt", slug: "shirts" },
-  { name: "Trouser", slug: "trouser" },
-  { name: "Jeans", slug: "jeans" },
-  { name: "Sweatshirt", slug: "sweatshirt" },
-  { name: "Polo", slug: "polo" },
-  { name: "Jacket", slug: "jackets" },
-  { name: "T-Shirt", slug: "tshirts" },
-  { name: "Sale", slug: "shop?category=All&sort=discount" },
+  { name: "Smartphones", slug: "smartphones" },
+  { name: "Laptops", slug: "laptops" },
+  { name: "Tablets", slug: "tablets" },
+  { name: "Accessories", slug: "accessories" },
 ] as const
 
 export const ROUTES = {

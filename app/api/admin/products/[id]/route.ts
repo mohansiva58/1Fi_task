@@ -94,8 +94,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     }
 
     // Invalidate product cache
-    await deleteCachePattern('products:*')
-    await deleteCache(`product:${id}`)
+    await deleteCachePattern('v2:products:*')
+    await deleteCache(`v2:product:${id}`)
     console.log('Cache invalidated for product:', id)
 
     return NextResponse.json({ success: true, product })
@@ -143,8 +143,8 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
     }
 
     // Invalidate product cache
-    await deleteCachePattern('products:*')
-    await deleteCache(`product:${id}`)
+    await deleteCachePattern('v2:products:*')
+    await deleteCache(`v2:product:${id}`)
     console.log('Cache invalidated for deleted product:', id)
 
     return NextResponse.json({ success: true, message: 'Product deleted successfully' })

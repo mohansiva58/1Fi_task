@@ -9,22 +9,12 @@ import { useRouter } from "next/navigation"
 import dynamic from "next/dynamic"
 import { SpinnerCenter } from "@/components/spinner"
 
-// Lazy load heavy components for better initial page load
-const NewArrivals = dynamic(() => import("@/components/new-arrivals"), {
-  loading: () => <div className="py-12 text-center text-gray-500">Loading products...</div>
-})
-
 const Newsletter = dynamic(() => import("@/components/newsletter"), {
   ssr: false,
   loading: () => <div className="py-12"></div>
 })
 
-const PersonalizedSuggestions = dynamic(() => import("@/components/personalized-suggestions"), {
-  ssr: false,
-  loading: () => <SpinnerCenter />
-})
-
-const RecommendationsSection = dynamic(() => import("@/components/recommendations-section"), {
+const RecentProducts = dynamic(() => import("@/components/recent-products"), {
   ssr: false,
   loading: () => <SpinnerCenter />
 })
@@ -37,7 +27,7 @@ export default function Home() {
       <main className="bg-white pb-20 md:pb-0">
         <HeroSection />
         <CategoriesGrid />
-        <RecommendationsSection />
+        <RecentProducts />
         {/* Trending Section */}
         <section className="py-24 px-6 md:px-12 lg:px-24 bg-white">
           <div className="max-w-7xl mx-auto">
@@ -54,7 +44,7 @@ export default function Home() {
                   onClick={() => router.push('/shop')}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1637067751055-4c75acba9936?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmFzaGlvbiUyMG1vZGVsJTIwcGhvdG9zfGVufDB8fDB8fHww"
+                    src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/mac-macbook-pro-size-unselect-202601-gallery-3?wid=5120&hei=3280&fmt=webp&qlt=90&.v=aXlkdGF0T0RUUVdDckNLaUc0OEE0d2huNHI2YVc1MjYxWkRLa3k4U1gzY1hKYXpvanE2MTFqNkhFOFRiTFg4Z3JUNGJWZ1llU1plZmhBekVhZm5NQnNqbWRhTGpRM2xxVWJRWUhSaDlCQ3B4THBaTFRLeTVoeUdtTWlCU2MzZjl1YmZQMXFXa2w0U3RUanhYSTV4Z29R&traceId=1"
                     alt="Trending look"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -69,10 +59,10 @@ export default function Home() {
               {/* Grid of smaller images */}
               <div className="lg:w-1/2 grid grid-cols-2 gap-6">
                 {[
-                  { img: "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=600&q=80", title: "Casual Luxe", category: "Shirt" },
-                  { img: "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=600&q=80", title: "Power Suits", category: "Jacket" },
-                  { img: "https://images.unsplash.com/photo-1523205565295-f8e91625443b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZmFzaGlvbiUyMG1vZGVsJTIwbWVufGVufDB8fDB8fHww", title: "Evening Glam", category: "Polo" },
-                  { img: "https://plus.unsplash.com/premium_photo-1727942418440-d085b3b5f065?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZmFzaGlvbiUyMG1vZGVsJTIwbWVufGVufDB8fDB8fHww", title: "Boho Spirit", category: "Sweatshirt" },
+                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MYJ33ref_VW_34FR+watch-case-40-aluminum-starlight-nc-se3_VW_34FR+watch-face-40-aluminum-starlight-se3_VW_34FR?wid=5120&hei=3280&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=L1VPMlk5ZkpkOVFZR3Fud25vckh4RStGZUJWLzNFUFVydllxZFp0d1M4NktoaXQwYi9wRGFOV2FsZVA1S1dYc01zdmlsQnpTM2JsTW1CL2FMcHR1ZUl3ZVlaMG9GekEwc3V1SXQ4RHBUY09LaGl0MGIvcERhTldhbGVQNUtXWHN3cVN2b2d1T00zNGpwWGphRE1oeEFaRnZGUUdUeGtYN2gySi9ZaWRpZitLckJnajVCaGRzU0pBREM1Q082Uk51NXVkZ2t0VWxQK2o2M01obVdMRmRjc0pSNGF0YXBqRjZkYVFiTFU1d3d0NERIZFBTOUw0Y2NhbzQxU3h0Y1V3YQ", title: "Casual Luxe", category: "smartphones" },
+                  { img: "https://www.apple.com/in/ipad-11/images/overview/hero/hero__ecv967jz1y82_large_2x.jpg", title: "Power Suits", category: "laptops" },
+                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/airpods-pro-3-hero-select-202509?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=cmp4MmZ6OWxOeHNNTXh4SzlBNUpEb1RucE9zZTI5eEREaWZpY29lSld3eVVtLzE2Q0EySC9CZElXWmlJUStQNGJXc28vclFrMG5TV3RZd2tDdDg3MUF5bnN5eWFQbzJrN0JIMUN0QVFTbUNEdVcrbTJTWmVpYVlxZmpTeDVSRGw&traceId=1", title: "Evening Glam", category: "laptops" },
+                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MUW43?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=TXZ0bFZkK0lrcEF2K1dDRGFIWkd1ZnZFbFJOV2ljOVRXK1VQVTIrdktaOWRWMUlKdjFtNWdFY2k1ZzJ4Vk54VDdBaWIrVDFGL2tpb1YzK0N4YytLOXc&traceId=1", title: "Boho Spirit", category: "smartphones" },
                 ].map((item, index) => (
                   <motion.div
                     key={index}
@@ -99,8 +89,6 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
-        <NewArrivals />
-        <PersonalizedSuggestions />
         <Newsletter />
       </main>
       <Footer />

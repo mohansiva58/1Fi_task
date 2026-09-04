@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     // Fetch product details from MongoDB
     const client = new MongoClient(MONGODB_URI)
     await client.connect()
-    const db = client.db('thehouseofrare')
+    const db = client.db(process.env.MONGODB_DATABASE || 'emiplatform')
 
     // Convert string IDs to ObjectIds
     const objectIds = productIds
@@ -143,7 +143,7 @@ async function getPopularProducts(limit: number = 8) {
   try {
     const client = new MongoClient(MONGODB_URI)
     await client.connect()
-    const db = client.db('thehouseofrare')
+    const db = client.db(process.env.MONGODB_DATABASE || 'emiplatform')
 
     const collections = await db.listCollections().toArray()
     const productCollections = collections

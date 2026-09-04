@@ -1,13 +1,19 @@
 const { MongoClient } = require('mongodb');
+require('dotenv').config({ path: '.env' });
+require('dotenv').config({ path: '.env.local', override: true });
 
-const MONGODB_URI = 'mongodb+srv://rarerabbit:r%40rer%40bbit@rarerabbit.uyfrgct.mongodb.net/thehouseofrare?retryWrites=true&w=majority&appName=rarerabbit';
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  throw new Error('MONGODB_URI not found in environment variables');
+}
 
 async function checkSweatshirts() {
   const client = new MongoClient(MONGODB_URI);
   
   try {
     await client.connect();
-    const db = client.db('thehouseofrare');
+    const db = client.db(process.env.MONGODB_DATABASE || 'emiplatform');
     
     console.log('🔍 SEARCHING FOR SWEATSHIRT PRODUCTS:\n');
     

@@ -23,6 +23,10 @@ export async function POST(request: Request) {
 
     const { amount, receipt } = validation.data
 
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET || !process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+      return NextResponse.json({ success: false, error: "Razorpay is not configured. Add valid test or live credentials." }, { status: 503 })
+    }
+
     // Create Razorpay order
     const order = await createRazorpayOrder(amount, receipt)
 
@@ -38,9 +42,10 @@ export async function POST(request: Request) {
     })
   } catch (error: any) {
     console.error("Create order error:", error)
+    const providerMessage = error?.error?.description || error?.message
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to create order" },
-      { status: 500 }
+      { success: false, error: providerMessage || "Razorpay order creation failed" },
+      { status: error?.statusCode === 401 ? 502 : 500 }
     )
   }
 }

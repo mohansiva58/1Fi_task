@@ -5,7 +5,8 @@
  * Usage: npm run migrate-add-slugs
  */
 
-require('dotenv').config({ path: '.env.local' })
+require('dotenv').config({ path: '.env' })
+require('dotenv').config({ path: '.env.local', override: true })
 const { MongoClient } = require('mongodb')
 
 const uri = process.env.MONGODB_URI
@@ -37,7 +38,7 @@ async function migrateAddSlugs() {
     await client.connect()
     console.log('✅ Connected to MongoDB')
 
-    const db = client.db('thehouseofrare')
+    const db = client.db(process.env.MONGODB_DATABASE || 'emiplatform')
     const collection = db.collection('products')
 
     console.log('\n📊 Starting slug migration...\n')

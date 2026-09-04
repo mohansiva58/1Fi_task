@@ -66,7 +66,7 @@ export default function RecommendationsSection() {
 
     // Fetch popular products (fast query)
     try {
-      const response = await fetch('/api/products?sort=popular&limit=8', {
+      const response = await fetch('/api/products', {
         cache: 'force-cache',
         next: { revalidate: 600 } // Cache for 10 minutes
       })

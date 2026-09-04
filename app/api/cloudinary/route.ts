@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadImage, uploadMultipleImages, deleteImage } from '@/lib/cloudinary'
+import { requireAdmin } from '@/lib/admin-auth'
 
 // POST - Upload image(s)
 export async function POST(request: NextRequest) {
+  const authError = await requireAdmin()
+  if (authError) return authError
+
   try {
     const body = await request.json()
     const { files, folder = 'products' } = body
@@ -34,6 +38,9 @@ export async function POST(request: NextRequest) {
 
 // DELETE - Delete image
 export async function DELETE(request: NextRequest) {
+  const authError = await requireAdmin()
+  if (authError) return authError
+
   try {
     const { searchParams } = new URL(request.url)
     const publicId = searchParams.get('publicId')

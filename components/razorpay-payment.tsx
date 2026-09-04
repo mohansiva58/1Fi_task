@@ -69,7 +69,9 @@ export default function RazorpayPayment({
       const data = await response.json()
 
       if (!data.success) {
-        throw new Error(data.error || "Failed to create order")
+        throw new Error(data.error === "Authentication failed"
+          ? "Payment gateway credentials are invalid. Please contact the store administrator."
+          : data.error || "Failed to create order")
       }
 
       // Razorpay payment options
@@ -77,8 +79,8 @@ export default function RazorpayPayment({
         key: data.keyId,
         amount: data.order.amount,
         currency: data.order.currency,
-        name: "THE HOUSE OF RARE",
-        description: "Premium Fashion & Apparel",
+        name: "EMI Platform",
+        description: "Electronics with flexible EMI plans",
         image: "/logo.png",
         order_id: data.order.id,
         prefill: {

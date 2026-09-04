@@ -13,7 +13,8 @@
     "db:migrate-categories": "node scripts/migrate-to-category-collections.js",
     "db:cleanup": "node scripts/cleanup-and-migrate.js",
     "db:count": "node scripts/count-all-products.js",
-    "db:remove-old": "node scripts/remove-old-collection.js"
+    "db:remove-old": "node scripts/remove-old-collection.js",
+    "db:seed-electronics": "node scripts/seed-electronics.js"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "latest",

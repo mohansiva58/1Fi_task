@@ -65,7 +65,7 @@ export function CloudinaryUpload({
     <CldUploadWidget
       uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'default'}
       options={{
-        folder: `thehouseofrare/${folder}`,
+        folder: `emiplatform/${folder}`,
         maxFiles: 10,
         resourceType: 'image',
         clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],

@@ -126,7 +126,7 @@ export async function POST(request: Request) {
     const product = await CategoryModel.create(data)
 
     // Invalidate product cache
-    await deleteCachePattern('products:*')
+    await deleteCachePattern('v2:products:*')
     console.log('Cache invalidated for products')
 
     console.log(`Product created successfully in collection: products_${category.toLowerCase()}`)

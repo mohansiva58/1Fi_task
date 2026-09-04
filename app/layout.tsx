@@ -11,8 +11,8 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Refero - Premium Hoodies & Apparel",
-  description: "Shop exclusive unisex hoodies and streetwear from Refero. Premium quality, sustainable fashion.",
+  title: "EMI Platform - Electronics on Flexible EMI",
+  description: "Shop smartphones, laptops, and electronics with transparent pricing and flexible EMI plans.",
   generator: 'v0.app',
   icons: {
     icon: [

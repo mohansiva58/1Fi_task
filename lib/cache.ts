@@ -26,7 +26,7 @@ function getRedisClient(): Redis | null {
     }
 
     // Extract host and port from URL
-    const [host, portStr] = redisUrl.split(':')
+    const [host, portStr = ''] = redisUrl.split(':')
     const port = parseInt(portStr, 10)
 
     redis = new Redis({
@@ -322,12 +322,12 @@ export const cacheKeys = {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([k, v]) => `${k}=${v}`)
       .join('&')
-    return `products:${query || 'all'}`
+    return `v2:products:${query || 'all'}`
   },
-  product: (id: string) => `product:${id}`,
-  categories: () => 'categories:all',
+  product: (id: string) => `v2:product:${id}`,
+  categories: () => 'v2:categories:all',
   searchResults: (query: string, filters: string) => 
-    `search:${query}:${filters}`,
+    `v2:search:${query}:${filters}`,
 }
 
 export { CACHE_TTL }

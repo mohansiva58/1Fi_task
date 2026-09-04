@@ -16,39 +16,34 @@ interface CategorySection {
 }
 
 const categories: CategorySection[] = [
-  /* ---------------------- MEN CLOTHING ---------------------- */
+  /* ---------------------- ELECTRONICS ---------------------- */
   {
-    title: "Men Clothing",
-    color: "text-gray-800",
+    title: "Electronics",
+    color: "text-cyan-800",
     items: [
-      { label: "Shirts", href: "/shop?category=Shirt" },
-      { label: "T-Shirts", href: "/shop?category=T-Shirt" },
-      { label: "Polo", href: "/shop?category=Polo" },
-      { label: "Jeans", href: "/shop?category=Jeans" },
-      { label: "Trouser", href: "/shop?category=Trouser" },
+      { label: "Smartphones", href: "/shop?category=smartphones" },
+      { label: "Laptops", href: "/shop?category=laptops" },
+      { label: "Tablets", href: "/shop?category=tablets" },
+      { label: "Accessories", href: "/shop?category=accessories" },
     ],
   },
 
-  /* ---------------------- TOPWEAR GROUP ---------------------- */
   {
-    title: "Topwear",
+    title: "Apple devices",
     color: "text-gray-800",
     items: [
-      { label: "T-Shirts", href: "/shop?category=T-Shirt" },
-      { label: "Shirts", href: "/shop?category=Shirt" },
-      { label: "Sweatshirts", href: "/shop?category=Sweatshirt" },
-      { label: "Polo T-Shirts", href: "/shop?category=Polo" },
+      { label: "iPhone", href: "/shop?search=iPhone" },
+      { label: "MacBook", href: "/shop?search=MacBook" },
+      { label: "Apple EMI offers", href: "/shop?category=smartphones" },
     ],
   },
 
-  /* ---------------------- WINTERWEAR ---------------------- */
   {
-    title: "Winterwear",
-    color: "text-gray-800",
+    title: "EMI plans",
+    color: "text-emerald-800",
     items: [
-      { label: "Sweater", href: "/shop?category=Sweater" },
-      { label: "Jackets", href: "/shop?category=Jacket" },
-      { label: "Sweatshirts", href: "/shop?category=Sweatshirt" },
+      { label: "0% EMI", href: "/shop?category=smartphones" },
+      { label: "Mutual-fund backed", href: "/shop?category=laptops" },
     ],
   },
 ]

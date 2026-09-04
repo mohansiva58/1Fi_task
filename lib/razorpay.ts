@@ -10,8 +10,8 @@ export const razorpay = new Razorpay({
 export const RAZORPAY_CONFIG = {
   keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
   currency: "INR",
-  name: "THE HOUSE OF RARE",
-  description: "Premium Fashion & Apparel",
+  name: "EMI Platform",
+  description: "Electronics with flexible EMI plans",
   image: "/logo.png", // Your logo
   prefill: {
     name: "",
@@ -31,7 +31,7 @@ export async function createRazorpayOrder(amount: number, receipt?: string) {
       currency: RAZORPAY_CONFIG.currency,
       receipt: receipt || `order_${Date.now()}`,
       notes: {
-        merchant: "THE HOUSE OF RARE",
+        merchant: "EMI Platform",
       },
     })
     return order

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     await client.connect()
-    const db = client.db("thehouseofrare")
+    const db = client.db(process.env.MONGODB_DATABASE || "emiplatform")
 
     const user = await db.collection("users").findOne({ email })
 

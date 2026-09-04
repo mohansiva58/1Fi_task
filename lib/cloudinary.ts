@@ -16,7 +16,7 @@ cloudinary.config({
 export async function uploadImage(file: string, folder: string = 'products') {
   try {
     const result = await cloudinary.uploader.upload(file, {
-      folder: `thehouseofrare/${folder}`,
+      folder: `emiplatform/${folder}`,
       transformation: [
         { width: 1200, height: 1600, crop: 'limit' }, // Max dimensions
         { quality: 'auto' }, // Automatic quality optimization

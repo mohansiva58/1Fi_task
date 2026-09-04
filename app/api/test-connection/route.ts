@@ -7,7 +7,7 @@ export async function GET() {
     return NextResponse.json({ 
       success: true, 
       message: "MongoDB connection successful!",
-      database: "thehouseofrare"
+      database: process.env.MONGODB_DATABASE || "emiplatform"
     })
   } catch (error) {
     console.error("MongoDB connection error:", error)

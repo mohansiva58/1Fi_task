@@ -29,6 +29,7 @@ export async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      dbName: process.env.MONGODB_DATABASE || 'emiplatform',
     }
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {

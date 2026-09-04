@@ -4,15 +4,15 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-
 const fashionImages = [
-  { id: 1, src: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-compare-iphone-air-202509?wid=400&hei=512&fmt=png-alpha&.v=M0dlUVBobHVpY1h1dmlaR3RZekpEMGtrRFZUNExaR0FUNGxJZXJuT2lqUjE5VXk1QVF5NWxrMFlTNWNpV2huNVM0TjRWdzF2UjRGVEY0c3dBQVZ6VGUza2N1YW5ubjVFaHZuNzNKcFIzTnc", alt: "Model in elegant coat", label: "Shirts", category: "Shirt" },
-  { id: 2, src: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-compare-iphone-17e-202603?wid=380&hei=512&fmt=png-alpha&.v=M0dlUVBobHVpY1h1dmlaR3RZekpEMDMzS2xmcnFyN2JjeXRuNU5pL1ZKWDd4U2s1ZXUvWFMycmRmdnZ0Qnh2UFM0TjRWdzF2UjRGVEY0c3dBQVZ6VFlvQzhPSnlRVmhZb2dXWmJRTWFrTE0", alt: "Fashion model in blazer", label: "Jeans", category: "Jeans" },
-  { id: 3, src: "https://images.unsplash.com/photo-1658080728906-60bb17de693c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDZ8fHxlbnwwfHx8fHw%3D", alt: "Street style fashion", label: "Trousers", category: "Trouser" },
-  { id: 4, src: "https://images.unsplash.com/photo-1610014133451-0f8b938d9661?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTl8fG1lbnMlMjBmYXNoaW9uJTIwbW9kZWwlMjBwaG90b3N8ZW58MHx8MHx8fDA%3D", alt: "Minimal fashion", label: "Polo", category: "Polo" },
-  { id: 5, src: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-compare-iphone-17e-202603?wid=380&hei=512&fmt=png-alpha&.v=M0dlUVBobHVpY1h1dmlaR3RZekpEMDMzS2xmcnFyN2JjeXRuNU5pL1ZKWDd4U2s1ZXUvWFMycmRmdnZ0Qnh2UFM0TjRWdzF2UjRGVEY0c3dBQVZ6VFlvQzhPSnlRVmhZb2dXWmJRTWFrTE0", alt: "Modern styling", label: "Jackets", category: "Jacket" }
-]
+ 
 
+  { id: 1, src: "/carousel/image copy 2.png", alt: "iPhone 17 Pro", label: "iPhone 12 ", category: "smartphones" },
+  { id: 2, src: "/carousel/image copy 5.png", alt: "iPhone 17", label: "Pods", category: "smartphones" },
+  { id: 3, src: "/carousel/image copy 3.png", alt: "MacBook Air M4", label: "iPhone 17 ", category: "laptops" },
+  { id: 4, src: "/carousel/image.png", alt: "iPhone camera", label: "Headset", category: "smartphones" },
+  { id: 5, src: "/carousel/image copy 4.png", alt: "MacBook display", label: "iPhone 11 ", category: "laptops" }
+]
 export function HeroSection() {
   const [activeIndex, setActiveIndex] = useState(2)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)

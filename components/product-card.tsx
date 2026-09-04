@@ -18,6 +18,7 @@ interface ProductCardProps {
     colors: string[]
     stockQuantity?: number
     inStock?: boolean
+    emiPlans?: { tenureMonths: number; monthlyAmount: number; interestRate: number }[]
   }
 }
 
@@ -113,6 +114,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             <span className="text-xs md:text-sm text-red-600 font-bold">{product.discount}%</span>
           )}
         </div>
+        {product.emiPlans && product.emiPlans.length > 0 && (
+          <p className="mt-1 text-xs font-medium text-emerald-700">
+            EMI from ₹{(product.emiPlans.find((plan) => plan.tenureMonths === 12) || product.emiPlans[0]).monthlyAmount.toLocaleString("en-IN")}/month
+          </p>
+        )}
       </div>
 
       <div className="flex gap-1 md:gap-2 flex-wrap">

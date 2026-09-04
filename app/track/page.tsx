@@ -147,21 +147,21 @@ export default function TrackPage() {
   const getStatusSteps = (status: string, createdAt: string) => {
     const steps = [
       { 
-        label: "Confirmed", 
+        label: "Order Placed", 
         icon: <CheckCircle size={24} />, 
         completed: true,
         date: new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric" })
       },
       { 
-        label: "On its way", 
-        icon: <Truck size={24} />, 
-        completed: status === "shipped" || status === "delivered",
+        label: "Packaged", 
+        icon: <Box size={24} />, 
+        completed: ["processing", "shipped", "delivered"].includes(status),
         date: status === "shipped" || status === "delivered" ? new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
       },
       { 
-        label: "Out for delivery", 
-        icon: <Box size={24} />, 
-        completed: status === "delivered",
+        label: "Shipped", 
+        icon: <Truck size={24} />, 
+        completed: status === "shipped" || status === "delivered",
         date: status === "delivered" ? new Date(createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric" }) : ""
       },
       { 
