@@ -332,11 +332,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             >
               <ChevronRight size={20} />
             </button>
-            {discount > 0 && (
+            {/* {discount > 0 && (
               <div className="absolute bottom-4 left-4 bg-orange-500 px-3 py-1 text-xs font-bold text-white rounded-full shadow-sm">
                 {discount}% Cashback Eligible
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="order-3 flex items-center justify-end md:col-start-2 gap-2">

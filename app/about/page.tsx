@@ -17,12 +17,12 @@ export default function BrandStory() {
             <div className="relative">
               <div className="aspect-[4/5] rounded-[60px] overflow-hidden">
                 <img
-                  src="https://plus.unsplash.com/premium_photo-1697695568160-ab895da7610b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGZhc2hpb24lMjBtb2RlbCUyMG1lbnxlbnwwfHwwfHx8MA%3D%3D"
-                  alt="Brand story"
+                  src="https://www.apple.com/in/ipad-11/images/overview/hero/hero__ecv967jz1y82_large_2x.jpg"
+                  alt="Our electronics collection"
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {/* Floating accent image */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -32,8 +32,8 @@ export default function BrandStory() {
                 className="absolute -bottom-8 -right-8 w-40 h-52 rounded-3xl overflow-hidden shadow-2xl border-4 border-white"
               >
                 <img
-                  src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=400&q=80"
-                  alt="Detail"
+                  src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MUW43?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=TXZ0bFZkK0lrcEF2K1dDRGFIWkd1ZnZFbFJOV2ljOVRXK1VQVTIrdktaOWRWMUlKdjFtNWdFY2k1ZzJ4Vk54VDdBaWIrVDFGL2tpb1YzK0N4YytLOXc&traceId=1"
+                  alt="Electronics detail"
                   className="w-full h-full object-cover"
                 />
               </motion.div>
@@ -50,36 +50,40 @@ export default function BrandStory() {
             <span className="text-xs tracking-[0.3em] uppercase text-neutral-500 mb-6 block">
               Our Story
             </span>
-            
+
             <h2 className="text-4xl md:text-5xl font-light text-black leading-tight mb-8">
-              Crafted with passion,{' '}
-              <span className="italic">worn with pride</span>
+              Technology made simple,{' '}
+              <span className="italic">payments made easier</span>
             </h2>
 
             <p className="text-neutral-600 text-lg leading-relaxed mb-8">
-              We believe fashion is more than fabric—it's an expression of identity. 
-              Each piece in our collection is thoughtfully designed to empower you, 
-              blending timeless elegance with contemporary edge.
+              We believe great technology should be accessible without making
+              the buying experience complicated. Our collection brings together
+              carefully selected smartphones, laptops, tablets, audio devices,
+              and smart accessories for modern everyday life.
             </p>
 
             <p className="text-neutral-500 leading-relaxed mb-10">
-              From sustainable sourcing to ethical production, we're committed to 
-              creating fashion that feels as good as it looks. Join us in redefining 
-              what it means to dress with intention.
+              With flexible EMI plans backed by mutual funds, we make it easier
+              to choose the technology you need and spread the cost across a
+              suitable tenure. From product selection to checkout, we focus on
+              keeping the experience simple, transparent, and convenient.
             </p>
 
             <div className="flex flex-wrap gap-12">
               <div>
-                <span className="text-4xl font-light text-black">15+</span>
-                <p className="text-neutral-500 text-sm mt-1">Years of Excellence</p>
+                <span className="text-4xl font-light text-black">7+</span>
+                <p className="text-neutral-500 text-sm mt-1">Flexible EMI Plans</p>
               </div>
+
               <div>
-                <span className="text-4xl font-light text-black">50K</span>
-                <p className="text-neutral-500 text-sm mt-1">Happy Customers</p>
+                <span className="text-4xl font-light text-black">0%</span>
+                <p className="text-neutral-500 text-sm mt-1">Interest Options</p>
               </div>
+
               <div>
                 <span className="text-4xl font-light text-black">100%</span>
-                <p className="text-neutral-500 text-sm mt-1">Sustainable</p>
+                <p className="text-neutral-500 text-sm mt-1">Transparent Pricing</p>
               </div>
             </div>
           </motion.div>

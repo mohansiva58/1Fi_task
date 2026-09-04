@@ -62,6 +62,7 @@ export async function POST(request: Request) {
     const db = await getDatabase()
     const result = await db.collection("electronics_products").insertOne(product)
     await deleteCachePattern("v5:electronics:*")
+    await deleteCachePattern("v2:products:*")
     return NextResponse.json({ success: true, product: { ...product, _id: result.insertedId.toString() } }, { status: 201 })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to create product"

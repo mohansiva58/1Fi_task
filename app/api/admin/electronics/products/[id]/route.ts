@@ -117,6 +117,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
     }
 
     await deleteCachePattern("v5:electronics:*")
+    await deleteCachePattern("v2:products:*")
     return NextResponse.json({
       success: true,
       product: {
@@ -148,6 +149,7 @@ export async function DELETE(request: Request, { params }: RouteContext) {
     }
 
     await deleteCachePattern("v5:electronics:*")
+    await deleteCachePattern("v2:products:*")
     return NextResponse.json({ success: true, message: "Product deleted successfully" })
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Failed to delete product"

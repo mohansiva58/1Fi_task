@@ -48,7 +48,7 @@ export interface AdminProductInput {
   variants: VariantData[]
 }
 
-const blankVariant = (index: number): VariantData => ({
+const blankVariant = (index: number, defaultImage = ""): VariantData => ({
   sku: `VAR-${Date.now().toString().slice(-4)}-${index + 1}`,
   label: "",
   storage: "",
@@ -57,6 +57,7 @@ const blankVariant = (index: number): VariantData => ({
   mrp: 0,
   price: 0,
   stockQuantity: 10,
+  images: defaultImage ? [defaultImage] : [],
 })
 
 const CATEGORY_OPTIONS = [
@@ -104,7 +105,7 @@ export default function AdminProductForm({
           mrp: Number(v.mrp) || Number(v.price) || 0,
           price: Number(v.price) || 0,
           stockQuantity: Number(v.stockQuantity) || 0,
-          images: v.images || [],
+          images: Array.isArray(v.images) ? v.images : [],
         }))
       : [blankVariant(0), blankVariant(1)]
   )
@@ -113,7 +114,7 @@ export default function AdminProductForm({
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" | "info" } | null>(null)
 
-  // Reset if initialProduct changes
+  // Reset when initialProduct changes
   useEffect(() => {
     if (initialProduct) {
       setName(initialProduct.name || "")
@@ -121,9 +122,30 @@ export default function AdminProductForm({
       setCategory(initialProduct.category || "smartphones")
       setDescription(initialProduct.description || "")
       setFeaturesList(initialProduct.features?.length ? initialProduct.features : [""])
-      setImages(initialProduct.images || [])
-      if (initialProduct.variants?.length) {
-        setVariants(initialProduct.variants)
+      
+      const allImgs = Array.from(
+        new Set([
+          ...(Array.isArray(initialProduct.images) ? initialProduct.images : []),
+          ...(Array.isArray(initialProduct.variants) ? initialProduct.variants.flatMap((v) => v.images || []) : []),
+        ])
+      ).filter(Boolean)
+
+      setImages(allImgs)
+
+      if (initialProduct.variants && initialProduct.variants.length > 0) {
+        setVariants(
+          initialProduct.variants.map((v, i) => ({
+            sku: v.sku || `VAR-${Date.now().toString().slice(-4)}-${i + 1}`,
+            label: v.label || "",
+            storage: v.storage || "",
+            color: v.color || "",
+            finish: v.finish || "",
+            mrp: Number(v.mrp) || Number(v.price) || 0,
+            price: Number(v.price) || 0,
+            stockQuantity: Number(v.stockQuantity) || 0,
+            images: Array.isArray(v.images) && v.images.length > 0 ? v.images : allImgs,
+          }))
+        )
       }
     }
   }, [initialProduct])
@@ -164,6 +186,15 @@ export default function AdminProductForm({
 
       const uploadedUrls = (result.data || []).map((item: { secure_url: string }) => item.secure_url)
       setImages((prev) => [...prev, ...uploadedUrls])
+      
+      // Also update variants if they have empty images
+      setVariants((prev) =>
+        prev.map((v) => ({
+          ...v,
+          images: v.images && v.images.length > 0 ? v.images : [...uploadedUrls],
+        }))
+      )
+
       setMessage({ text: `${uploadedUrls.length} image(s) uploaded successfully`, type: "success" })
     } catch (error) {
       setMessage({
@@ -181,6 +212,12 @@ export default function AdminProductForm({
     try {
       new URL(trimmed)
       setImages((prev) => [...prev, trimmed])
+      setVariants((prev) =>
+        prev.map((v) => ({
+          ...v,
+          images: v.images && v.images.length > 0 ? v.images : [trimmed],
+        }))
+      )
       setUrlInput("")
       setMessage({ text: "Image URL added to gallery", type: "success" })
     } catch {
@@ -189,7 +226,20 @@ export default function AdminProductForm({
   }
 
   function removeImage(index: number) {
-    setImages((prev) => prev.filter((_, i) => i !== index))
+    const removedUrl = images[index]
+    const updatedImages = images.filter((_, i) => i !== index)
+    setImages(updatedImages)
+
+    // Also remove the deleted image from any variants that had it
+    setVariants((prev) =>
+      prev.map((v) => {
+        const remaining = (v.images || []).filter((img) => img !== removedUrl)
+        return {
+          ...v,
+          images: remaining.length > 0 ? remaining : updatedImages.slice(0, 1),
+        }
+      })
+    )
   }
 
   function setCoverImage(index: number) {
@@ -219,12 +269,11 @@ export default function AdminProductForm({
   }
 
   // Variant handlers
-  function updateVariant(index: number, field: keyof VariantData, value: string | number) {
+  function updateVariant(index: number, field: keyof VariantData, value: any) {
     setVariants((prev) =>
       prev.map((variant, i) => {
         if (i !== index) return variant
         const updated = { ...variant, [field]: value }
-        // Auto sync label if blank
         if ((field === "storage" || field === "color") && !variant.label) {
           const s = field === "storage" ? value : variant.storage
           const c = field === "color" ? value : variant.color
@@ -236,7 +285,7 @@ export default function AdminProductForm({
   }
 
   function addVariantRow() {
-    setVariants((prev) => [...prev, blankVariant(prev.length)])
+    setVariants((prev) => [...prev, blankVariant(prev.length, images[0] || "")])
   }
 
   function removeVariantRow(index: number) {
@@ -289,13 +338,19 @@ export default function AdminProductForm({
       description: description.trim(),
       features: cleanedFeatures,
       images,
-      variants: variants.map((v) => ({
-        ...v,
-        mrp: Number(v.mrp) || Number(v.price),
-        price: Number(v.price),
-        stockQuantity: Number(v.stockQuantity) || 0,
-        images: v.images && v.images.length ? v.images : images,
-      })),
+      variants: variants.map((v) => {
+        // Keep valid variant images or fallback to the newly updated gallery images
+        const validImgs = Array.isArray(v.images) && v.images.length > 0
+          ? v.images.filter((img) => images.includes(img))
+          : []
+        return {
+          ...v,
+          mrp: Number(v.mrp) || Number(v.price),
+          price: Number(v.price),
+          stockQuantity: Number(v.stockQuantity) || 0,
+          images: validImgs.length > 0 ? validImgs : images,
+        }
+      }),
     }
 
     try {
@@ -322,10 +377,10 @@ export default function AdminProductForm({
 
       setTimeout(() => {
         onSaved()
-      }, 700)
-    } catch (err) {
+      }, 800)
+    } catch (error) {
       setMessage({
-        text: err instanceof Error ? err.message : "Error saving product",
+        text: error instanceof Error ? error.message : "Failed to save product",
         type: "error",
       })
     } finally {
@@ -334,64 +389,35 @@ export default function AdminProductForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-5xl mx-auto pb-12">
-      {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-200 pb-5">
+    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-8 pb-16">
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
-            {onCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="p-1 text-gray-500 hover:text-black rounded hover:bg-gray-100 transition mr-1"
-                title="Go back"
-              >
-                <ArrowLeft size={20} />
-              </button>
-            )}
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800">
-              <Sparkles size={12} />
-              {isEditing ? "Edit Mode" : "New Intake"}
+            <span className="text-xs font-bold uppercase tracking-widest text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full">
+              {isEditing ? "Edit Mode" : "Catalog Creator"}
             </span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-2">
-            {isEditing ? `Edit "${name || "Product"}"` : "Add New Electronics Device"}
+          <h2 className="text-2xl font-bold text-gray-900 mt-2">
+            {isEditing ? `Edit: ${name || "Electronics Device"}` : "Add New Electronics Product"}
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Fill in device specifications, upload product images, and set dynamic variant pricing with automated EMI calculation.
+          <p className="text-xs text-gray-500 mt-1">
+            Complete device specifications, variants, pricing, and upload images.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {onCancel && (
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2 text-sm font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition"
-            >
-              Cancel
-            </button>
-          )}
+        {onCancel && (
           <button
-            type="submit"
-            disabled={saving || uploading}
-            className="inline-flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
+            onClick={onCancel}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-black border border-gray-300 rounded-lg px-3 py-2 transition self-start sm:self-auto"
           >
-            {saving ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Saving...
-              </>
-            ) : isEditing ? (
-              "Save Changes"
-            ) : (
-              "Publish Product"
-            )}
+            <ArrowLeft size={14} /> Back to Catalog
           </button>
-        </div>
+        )}
       </div>
 
-      {/* Status banner */}
+      {/* Notification / Alert Bar */}
       {message && (
         <div
           className={`p-4 rounded-xl flex items-center gap-3 text-sm font-medium border ${
@@ -399,16 +425,12 @@ export default function AdminProductForm({
               ? "bg-emerald-50 text-emerald-800 border-emerald-200"
               : message.type === "error"
               ? "bg-rose-50 text-rose-800 border-rose-200"
-              : "bg-cyan-50 text-cyan-800 border-cyan-200"
+              : "bg-blue-50 text-blue-800 border-blue-200"
           }`}
         >
-          {message.type === "success" ? (
-            <Check size={18} className="shrink-0 text-emerald-600" />
-          ) : message.type === "error" ? (
-            <AlertCircle size={18} className="shrink-0 text-rose-600" />
-          ) : (
-            <Info size={18} className="shrink-0 text-cyan-600" />
-          )}
+          {message.type === "success" && <Check size={18} className="text-emerald-600 shrink-0" />}
+          {message.type === "error" && <AlertCircle size={18} className="text-rose-600 shrink-0" />}
+          {message.type === "info" && <Loader2 size={18} className="animate-spin text-blue-600 shrink-0" />}
           <span>{message.text}</span>
         </div>
       )}
@@ -416,30 +438,29 @@ export default function AdminProductForm({
       {/* SECTION 1: Basic Information */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8 space-y-6">
         <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-          <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
-            <Tag size={20} />
+          <div className="p-2.5 rounded-xl bg-orange-50 text-orange-600">
+            <Sparkles size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900">General Information</h3>
-            <p className="text-xs text-gray-500">Device branding, name, category, and identity</p>
+            <h3 className="text-lg font-bold text-gray-900">Basic Information</h3>
+            <p className="text-xs text-gray-500">Device name, manufacturer brand, and primary category</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Product Name */}
-          <div className="space-y-1.5 sm:col-span-2">
+          <div className="md:col-span-2 space-y-1.5">
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
-              Product Name <span className="text-rose-500">*</span>
+              Product Title / Name <span className="text-rose-500">*</span>
             </label>
             <input
               required
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. iPhone 16 Pro Max or MacBook Air M4"
+              placeholder="e.g. iPhone 16 Pro Max, MacBook Pro 16 M3"
               className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
             />
-            <p className="text-xs text-gray-400">Full model title displayed prominently in the catalog and product page.</p>
           </div>
 
           {/* Brand */}
@@ -456,50 +477,37 @@ export default function AdminProductForm({
               className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
             />
           </div>
-
-          {/* Category */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
-              Category <span className="text-rose-500">*</span>
-            </label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value as any)}
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition"
-            >
-              {CATEGORY_OPTIONS.map((cat) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {/* Category Visual Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          {CATEGORY_OPTIONS.map((cat) => {
-            const Icon = cat.icon
-            const isSelected = category === cat.value
-            return (
-              <button
-                key={cat.value}
-                type="button"
-                onClick={() => setCategory(cat.value as any)}
-                className={`flex flex-col items-start p-3.5 rounded-xl border text-left transition ${
-                  isSelected
-                    ? "border-black bg-gray-50 ring-1 ring-black"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50"
-                }`}
-              >
-                <div className={`p-2 rounded-lg mb-2 ${isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-600"}`}>
-                  <Icon size={18} />
-                </div>
-                <span className="text-xs font-bold text-gray-900">{cat.label}</span>
-                <span className="text-[10px] text-gray-500 line-clamp-1 mt-0.5">{cat.desc}</span>
-              </button>
-            )
-          })}
+        <div className="space-y-2 pt-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+            Device Category <span className="text-rose-500">*</span>
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+            {CATEGORY_OPTIONS.map((cat) => {
+              const Icon = cat.icon
+              const isSelected = category === cat.value
+              return (
+                <button
+                  key={cat.value}
+                  type="button"
+                  onClick={() => setCategory(cat.value as any)}
+                  className={`flex flex-col items-start p-3 rounded-xl border text-left transition ${
+                    isSelected
+                      ? "border-black bg-gray-50 ring-2 ring-black"
+                      : "border-gray-200 hover:border-gray-300 hover:bg-gray-50/50"
+                  }`}
+                >
+                  <div className={`p-2 rounded-lg mb-2 ${isSelected ? "bg-black text-white" : "bg-gray-100 text-gray-600"}`}>
+                    <Icon size={18} />
+                  </div>
+                  <span className="text-xs font-bold text-gray-900">{cat.label}</span>
+                  <span className="text-[10px] text-gray-500 line-clamp-1 mt-0.5">{cat.desc}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -512,7 +520,7 @@ export default function AdminProductForm({
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900">Product Images & Gallery</h3>
-              <p className="text-xs text-gray-500">Upload high-resolution product photos or add external image URLs</p>
+              <p className="text-xs text-gray-500">Upload product photos or add external URLs. All variants will sync with these images.</p>
             </div>
           </div>
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">
@@ -571,7 +579,7 @@ export default function AdminProductForm({
               </div>
             </div>
             <p className="text-xs text-gray-400 mt-3">
-              Tip: Paste links from Apple CDN, Unsplash, or manufacturer asset libraries.
+              Tip: Paste direct image links from Apple CDN, manufacturer libraries, or Unsplash.
             </p>
           </div>
         </div>
@@ -732,6 +740,7 @@ export default function AdminProductForm({
         <div className="space-y-6">
           {variants.map((v, idx) => {
             const discount = v.mrp > v.price ? Math.round(((v.mrp - v.price) / v.mrp) * 100) : 0
+            const variantThumb = (v.images && v.images[0]) || images[0] || "/placeholder.svg"
 
             return (
               <div
@@ -744,6 +753,9 @@ export default function AdminProductForm({
                     <span className="h-6 w-6 rounded-full bg-black text-white text-xs font-bold flex items-center justify-center">
                       {idx + 1}
                     </span>
+                    <div className="w-8 h-8 rounded-lg overflow-hidden bg-white border border-gray-200 p-0.5 shrink-0">
+                      <img src={variantThumb} alt="" className="w-full h-full object-contain" />
+                    </div>
                     <div>
                       <h4 className="text-sm font-bold text-gray-900">
                         {v.label || v.storage || v.color ? `${v.storage || ""} ${v.color || ""} (${v.sku})` : `Variant #${idx + 1}`}
@@ -895,7 +907,7 @@ export default function AdminProductForm({
         </div>
       </div>
 
-      {/* Floating or Bottom Action Bar */}
+      {/* Floating Action Bar */}
       <div className="sticky bottom-4 z-10 bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-4 flex items-center justify-between gap-4">
         <div className="text-xs text-gray-500 hidden sm:block">
           Ensure all prices, variant SKUs, and images are accurate before saving.
