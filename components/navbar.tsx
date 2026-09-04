@@ -125,9 +125,9 @@ function NavbarContent() {
                 className="w-10 h-10 md:w-12 md:h-12 object-contain"
               /> */}
               <span className="flex h-10 w-10 items-center justify-center border border-black text-xs font-bold md:h-12 md:w-12">EMI</span>
-              <span className="text-xs font-semibold tracking-widest hidden sm:inline ml-2">
+              {/* <span className="text-xs font-semibold tracking-widest hidden sm:inline ml-2">
                 EMI platform
-              </span>
+              </span> */}
             </Link>
           </div>
         </div>
@@ -301,9 +301,9 @@ export default function Navbar() {
                 className="w-10 h-10 md:w-12 md:h-12 object-contain"
               /> */}
               <span className="flex h-12 w-12 items-center justify-center border border-black text-xs font-bold">EMI</span>
-              <span className="text-xs font-semibold tracking-widest hidden sm:inline ml-2">
+              {/* <span className="text-xs font-semibold tracking-widest hidden sm:inline ml-2">
                 EMI platform
-              </span>
+              </span> */}
             </Link>
             <div className="flex items-center gap-2 md:gap-4">
               <div className="w-8 h-8" />
