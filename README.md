@@ -26,8 +26,25 @@ The application allows users to browse electronics, select product variants, vie
 
 ---
 
+## Demo
+
+**Live Application:**  
+https://1fi-xi.vercel.app/
+
+**GitHub Repository:**  
+https://github.com/mohansiva58/1Fi_task/
+
+**Demo Video:**  
+https://youtu.be/wFXRvP13Iew?si=m8gDX5KG1UoihfiD
+
+---
+
+
 ## Tech Stack
 
+ ## Admin-mail = mohansivathota@gmail.com
+ ## Adminpass= siv@siv@
+ 
 ### Frontend
 
 - Next.js 16
