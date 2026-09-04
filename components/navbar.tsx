@@ -118,16 +118,12 @@ function NavbarContent() {
         {/* Left - Logo on desktop, empty spacer on mobile */}
         <div className="flex items-center gap-2 md:gap-0 flex-1 md:flex-none">
           <div className="hidden md:flex items-center">
-            <Link href="/" className="flex items-center" aria-label="Home">
-              {/* <img
-                src="https://instagram.frja3-1.fna.fbcdn.net/v/t51.82787-19/620762570_17853426978615079_5507045277725495093_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.frja3-1.fna.fbcdn.net&_nc_cat=107&_nc_oc=Q6cZ2QGN_qIUFcRCF3BqQZgkAHi8KGXOCAKNxwDdvHa3Yl_cHKhGjZOifzoile8LOja3A7E&_nc_ohc=0q6e_84R468Q7kNvwF3hDEK&_nc_gid=ygxaGfl2ryTE_HpaB35SuQ&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AfyHI5At_xGV93TzD4mr8U0HWylPrPXd0xn8SQmwMOpWCw&oe=69B43AF2&_nc_sid=7a9f4b"
-                alt="EMI platform"
-                className="w-10 h-10 md:w-12 md:h-12 object-contain"
-              /> */}
-              <span className="flex h-10 w-10 items-center justify-center border border-black text-xs font-bold md:h-12 md:w-12">EMI</span>
-              {/* <span className="text-xs font-semibold tracking-widest hidden sm:inline ml-2">
-                EMI platform
-              </span> */}
+            <Link href="/" className="flex items-center gap-2" aria-label="Home">
+              <img
+                src="/logo.png"
+                alt="EMI Platform"
+                className="h-8 md:h-10 w-auto object-contain"
+              />
             </Link>
           </div>
         </div>
@@ -135,12 +131,11 @@ function NavbarContent() {
         {/* Center - Logo on mobile only */}
         <div className="absolute left-1/2 -translate-x-1/2 md:hidden">
           <Link href="/" className="flex items-center" aria-label="Home">
-            {/* <img
-              src="https://images.yourstory.com/cs/images/companies/shoprarerabbitlogo-1719813730851.jpg?fm=auto&ar=1%3A1&mode=fill&fill=solid&fill-color=fff&format=auto&w=1920&q=75"
-              alt="EMI platform"
-              className="w-12 h-12 object-contain"
-            /> */}
-            <span className="flex h-12 w-12 items-center justify-center border border-black text-xs font-bold">EMI</span>
+            <img
+              src="/logo.png"
+              alt="EMI Platform"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
         </div>
 
@@ -294,16 +289,12 @@ export default function Navbar() {
             <div className="flex items-center gap-4 md:gap-8">
               <div className="w-8 h-8" />
             </div>
-            <Link href="/" className="flex items-center" aria-label="Home">
-              {/* <img
-                src="https://images.yourstory.com/cs/images/companies/shoprarerabbitlogo-1719813730851.jpg?fm=auto&ar=1%3A1&mode=fill&fill=solid&fill-color=fff&format=auto&w=1920&q=75"
-                alt="EMI platform"
-                className="w-10 h-10 md:w-12 md:h-12 object-contain"
-              /> */}
-              <span className="flex h-12 w-12 items-center justify-center border border-black text-xs font-bold">EMI</span>
-              {/* <span className="text-xs font-semibold tracking-widest hidden sm:inline ml-2">
-                EMI platform
-              </span> */}
+            <Link href="/" className="flex items-center gap-2" aria-label="Home">
+              <img
+                src="/logo.png"
+                alt="EMI Platform"
+                className="h-8 md:h-10 w-auto object-contain"
+              />
             </Link>
             <div className="flex items-center gap-2 md:gap-4">
               <div className="w-8 h-8" />

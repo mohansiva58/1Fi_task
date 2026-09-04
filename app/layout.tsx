@@ -17,20 +17,20 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "https://images.yourstory.com/cs/images/companies/shoprarerabbitlogo-1719813730851.jpg?fm=auto&ar=1%3A1&mode=fill&fill=solid&fill-color=fff&format=auto&w=192&q=75",
+        url: "/logo.png",
         sizes: "32x32",
-        type: "image/jpg",
+        type: "image/png",
       },
       {
-        url: "https://images.yourstory.com/cs/images/companies/shoprarerabbitlogo-1719813730851.jpg?fm=auto&ar=1%3A1&mode=fill&fill=solid&fill-color=fff&format=auto&w=192&q=75",
+        url: "/logo.png",
         sizes: "192x192",
-        type: "image/jpg",
+        type: "image/png",
       },
     ],
     apple: {
-      url: "https://images.yourstory.com/cs/images/companies/shoprarerabbitlogo-1719813730851.jpg?fm=auto&ar=1%3A1&mode=fill&fill=solid&fill-color=fff&format=auto&w=192&q=75",
+      url: "/logo.png",
       sizes: "180x180",
-      type: "image/jpg",
+      type: "image/png",
     },
   },
 }

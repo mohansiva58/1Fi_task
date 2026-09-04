@@ -3,7 +3,7 @@
 import Image from "next/image"
 
 export default function LoadingLogo({
-  src = "/logo.svg",
+  src = "/logo.png",
   alt = "Loading",
 }: {
   src?: string
