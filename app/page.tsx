@@ -50,7 +50,7 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className="absolute bottom-8 left-8 right-8">
-                    <span className="text-white/80 text-sm tracking-wide uppercase mb-2 block">Trending Now</span>
+                    <span className="text-white/80 text-sm tracking-wide uppercase mb-2 block">Work Anywhere</span>
                     <h3 className="text-white text-3xl font-light">The Oversized Edit</h3>
                   </div>
                 </div>
@@ -59,10 +59,10 @@ export default function Home() {
               {/* Grid of smaller images */}
               <div className="lg:w-1/2 grid grid-cols-2 gap-6">
                 {[
-                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MYJ33ref_VW_34FR+watch-case-40-aluminum-starlight-nc-se3_VW_34FR+watch-face-40-aluminum-starlight-se3_VW_34FR?wid=5120&hei=3280&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=L1VPMlk5ZkpkOVFZR3Fud25vckh4RStGZUJWLzNFUFVydllxZFp0d1M4NktoaXQwYi9wRGFOV2FsZVA1S1dYc01zdmlsQnpTM2JsTW1CL2FMcHR1ZUl3ZVlaMG9GekEwc3V1SXQ4RHBUY09LaGl0MGIvcERhTldhbGVQNUtXWHN3cVN2b2d1T00zNGpwWGphRE1oeEFaRnZGUUdUeGtYN2gySi9ZaWRpZitLckJnajVCaGRzU0pBREM1Q082Uk51NXVkZ2t0VWxQK2o2M01obVdMRmRjc0pSNGF0YXBqRjZkYVFiTFU1d3d0NERIZFBTOUw0Y2NhbzQxU3h0Y1V3YQ", title: "Casual Luxe", category: "smartphones" },
-                  { img: "https://www.apple.com/in/ipad-11/images/overview/hero/hero__ecv967jz1y82_large_2x.jpg", title: "Power Suits", category: "laptops" },
-                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/airpods-pro-3-hero-select-202509?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=cmp4MmZ6OWxOeHNNTXh4SzlBNUpEb1RucE9zZTI5eEREaWZpY29lSld3eVVtLzE2Q0EySC9CZElXWmlJUStQNGJXc28vclFrMG5TV3RZd2tDdDg3MUF5bnN5eWFQbzJrN0JIMUN0QVFTbUNEdVcrbTJTWmVpYVlxZmpTeDVSRGw&traceId=1", title: "Evening Glam", category: "laptops" },
-                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MUW43?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=TXZ0bFZkK0lrcEF2K1dDRGFIWkd1ZnZFbFJOV2ljOVRXK1VQVTIrdktaOWRWMUlKdjFtNWdFY2k1ZzJ4Vk54VDdBaWIrVDFGL2tpb1YzK0N4YytLOXc&traceId=1", title: "Boho Spirit", category: "smartphones" },
+                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MYJ33ref_VW_34FR+watch-case-40-aluminum-starlight-nc-se3_VW_34FR+watch-face-40-aluminum-starlight-se3_VW_34FR?wid=5120&hei=3280&bgc=fafafa&trim=1&fmt=p-jpg&qlt=80&.v=L1VPMlk5ZkpkOVFZR3Fud25vckh4RStGZUJWLzNFUFVydllxZFp0d1M4NktoaXQwYi9wRGFOV2FsZVA1S1dYc01zdmlsQnpTM2JsTW1CL2FMcHR1ZUl3ZVlaMG9GekEwc3V1SXQ4RHBUY09LaGl0MGIvcERhTldhbGVQNUtXWHN3cVN2b2d1T00zNGpwWGphRE1oeEFaRnZGUUdUeGtYN2gySi9ZaWRpZitLckJnajVCaGRzU0pBREM1Q082Uk51NXVkZ2t0VWxQK2o2M01obVdMRmRjc0pSNGF0YXBqRjZkYVFiTFU1d3d0NERIZFBTOUw0Y2NhbzQxU3h0Y1V3YQ", title: "Smart Essentials", category: "smartphones" },
+                  { img: "https://www.apple.com/in/ipad-11/images/overview/hero/hero__ecv967jz1y82_large_2x.jpg", title: "Power Your Creativity", category: "laptops" },
+                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/airpods-pro-3-hero-select-202509?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=cmp4MmZ6OWxOeHNNTXh4SzlBNUpEb1RucE9zZTI5eEREaWZpY29lSld3eVVtLzE2Q0EySC9CZElXWmlJUStQNGJXc28vclFrMG5TV3RZd2tDdDg3MUF5bnN5eWFQbzJrN0JIMUN0QVFTbUNEdVcrbTJTWmVpYVlxZmpTeDVSRGw&traceId=1", title: "Everyday Audio", category: "laptops" },
+                  { img: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/MUW43?wid=1200&hei=1200&fmt=webp-alpha&qlt=90&.v=TXZ0bFZkK0lrcEF2K1dDRGFIWkd1ZnZFbFJOV2ljOVRXK1VQVTIrdktaOWRWMUlKdjFtNWdFY2k1ZzJ4Vk54VDdBaWIrVDFGL2tpb1YzK0N4YytLOXc&traceId=1", title: "Immersive Sound", category: "smartphones" },
                 ].map((item, index) => (
                   <motion.div
                     key={index}

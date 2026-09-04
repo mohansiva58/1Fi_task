@@ -79,11 +79,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                 OUT OF STOCK
               </div>
             )}
-            {product.discount && product.discount > 0 && !isOutOfStock && (
+            {typeof product.discount === "number" && product.discount > 0 && !isOutOfStock ? (
               <div className="absolute top-3 right-3 bg-orange-500 text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm z-10">
                 {product.discount}% OFF
               </div>
-            )}
+            ) : null}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition flex items-center justify-center gap-3 md:gap-4 pointer-events-none group-hover:pointer-events-auto">
               <button
                 onClick={(e) => {
@@ -164,7 +164,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Colors / Finishes */}
       {product.colors && product.colors.length > 0 && (
         <div className="flex gap-1 flex-wrap pt-1 border-t border-gray-100 mt-2">
-          {product.colors.map((color) => (
+          {Array.from(new Set(product.colors)).map((color) => (
             <button
               key={color}
               onClick={() => setSelectedColor(color)}
